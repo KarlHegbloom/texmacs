@@ -1554,6 +1554,11 @@ if test -n "$ac_init_help"; then
                           image handling, ...)
   --enable-console        enable windows console
   --disable-qt            replace Qt by X11 interface
+  --enable-QtPlugins[=list]
+                          default qt4 plugins:
+                          imageformats,accessible,accessiblebridge,inputmethods
+                          default qt5 plugins:
+                          generic,imageformats,platforminputcontexts,platforms,printsupport,xcbglintegrations
   --enable-qtpipes        replace UNIX pipes by Qt pipes
   --enable-cocoa          replace X11 by Cocoa interface
   --disable-pdf-renderer  use hummus support for native pdf exports
@@ -19975,11 +19980,15 @@ $as_echo_n "checking for Qt... " >&6; }
 qtHaveModule(core):              QT += core
 qtHaveModule(dbus):              QT += dbus
 qtHaveModule(gui):               QT += gui
+qtHaveModule(help):              QT += help
 qtHaveModule(network):           QT += network
+qtHaveModule(platformheaders):   QT += platformheaders
 qtHaveModule(printsupport):      QT += printsupport
+qtHaveModule(svg):               QT += svg
+qtHaveModule(webchannel):        QT += webchannel
+qtHaveModule(webkit):            QT += webkit
 qtHaveModule(widgets):           QT += widgets
 qtHaveModule(x11extras):         QT += x11extras
-qtHaveModule(xml):               QT += xml
 percent.target = %
 percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
@@ -22722,13 +22731,116 @@ $as_echo "$as_me: WARNING: Drop duplicate flag $LC_PREPEND_LIST_flag" >&2;}
   unset ${!LC_SCATTER_FLAGS_*}
 
   # Qt Plugins list
-  #PLUGINS_LIST="imageformats,accessible"
-  PLUGINS_LIST="imageformats,accessible,inputmethods"
-  #PLUGINS_LIST="imageformats,accessible,accessiblebridge,inputmethods,styles,systemtrayicon"
+  PLUGINS_LIST="imageformats,accessible,accessiblebridge,inputmethods"
   if test "$QT5_AVAILABLE" = yes; then
-    # PLUGINS_LIST="imageformats"
-    PLUGINS_LIST="imageformats,printsupport,styles,platforminputcontexts,platforms,platformthemes,xcbglintegrations"
+     PLUGINS_LIST="generic,imageformats,platforminputcontexts,platforms,printsupport,xcbglintegrations"
   fi
+  QT_PLUGINS_LIST="$PLUGINS_LIST"
+  # Check whether --enable-QtPlugins was given.
+if test "${enable_QtPlugins+set}" = set; then :
+  enableval=$enable_QtPlugins; QT_PLUGINS_LIST=$enableval
+else
+  QT_PLUGINS_LIST="$PLUGINS_LIST"
+fi
+
+  case $QT_PLUGINS_LIST in
+  yes) QT_PLUGINS_LIST="$PLUGINS_LIST";;
+  no) unset QT_PLUGINS_LIST
+  esac
+
+  [[ $enable_qt == no ]] &&  unset QT_PLUGINS_LIST
+  for p in ${QT_PLUGINS_LIST//,/ }
+  do [ -d $QT_PLUGINS_PATH/$p ] || as_fn_error $? "QT plugins not found!" "$LINENO" 5
+  done
+
+  # Qt Pipes
+  # Check whether --enable-qtpipes was given.
+if test "${enable_qtpipes+set}" = set; then :
+  enableval=$enable_qtpipes;
+else
+  enable_qtpipes=$CONFIG_QTPIPES
+fi
+
+
+  case "$enable_qtpipes" in
+      yes)
+	  if test x"$CONFIG_GUI" = xQT; then
+
+$as_echo "#define QTPIPES 1" >>confdefs.h
+
+	     { $as_echo "$as_me:${as_lineno-$LINENO}: result: enabling Qt pipes" >&5
+$as_echo "enabling Qt pipes" >&6; }
+	  else
+	     as_fn_error $? "QT not enabled!" "$LINENO" 5
+	  fi
+	  ;;
+      no)
+	  if test x"$CONFIG_GUI" = xQT; then
+	     { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabling Qt pipes" >&5
+$as_echo "disabling Qt pipes" >&6; }
+	  fi
+	  ;;
+      *)
+	  as_fn_error $? "bad option --enable-qtpipes=$enable_qtpipes" "$LINENO" 5
+	  ;;
+  esac
+
+  # Check whether --enable-cocoa was given.
+if test "${enable_cocoa+set}" = set; then :
+  enableval=$enable_cocoa;
+else
+  enable_cocoa="no"
+fi
+
+  case "$enable_cocoa" in
+      yes)
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: enabling experimental Cocoa port" >&5
+$as_echo "enabling experimental Cocoa port" >&6; }
+	  COCOA_CFLAGS=""
+	  COCOA_LDFLAGS="-framework Cocoa"
+	  CONFIG_GUI="COCOA"
+	  ;;
+      no)
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabling experimental Cocoa port" >&5
+$as_echo "disabling experimental Cocoa port" >&6; }
+	  ;;
+      *)
+	  as_fn_error $? "bad option --enable-cocoa=$enable_cocoa" "$LINENO" 5
+	  ;;
+  esac
+
+  case "$CONFIG_GUI" in
+      X11)
+	  CONFIG_X11="X11 Widkit"
+	  if test "x${CONFIG_GS}" != "xGhostscript"; then
+	    CONFIG_X11="$CONFIG_X11 Ghostscript"
+	  fi
+	  CONFIG_GUI_DEFINE="X11TEXMACS"
+  #        AC_DEFINE(X11TEXMACS, 1, [Use standard X11 port])
+	  ;;
+      COCOA)
+	  CONFIG_COCOA="Cocoa"
+	  CONFIG_GUI_DEFINE="AQUATEXMACS"
+  #        AC_DEFINE(AQUATEXMACS, 1, [Enable experimental Cocoa port])
+	  ;;
+      QT)
+	  CONFIG_QT="Qt"
+	  CONFIG_GUI_DEFINE="QTTEXMACS"
+  #        AC_DEFINE(QTTEXMACS, 1, [Enable experimental Qt port])
+	  ;;
+  esac
+
+
+
+
+
+
+
+
+
+
+
+
 
   X11_CXX=$X11_CXXFLAGS
 

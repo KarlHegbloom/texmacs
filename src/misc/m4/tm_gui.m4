@@ -50,13 +50,25 @@ AC_DEFUN([TM_GUI],[
   esac
 
   # Qt Plugins list
-  #PLUGINS_LIST="imageformats,accessible"
-  PLUGINS_LIST="imageformats,accessible,inputmethods"
-  #PLUGINS_LIST="imageformats,accessible,accessiblebridge,inputmethods,styles,systemtrayicon"
+  PLUGINS_LIST="imageformats,accessible,accessiblebridge,inputmethods"
   if test "$QT5_AVAILABLE" = yes; then
-    # PLUGINS_LIST="imageformats"
-    PLUGINS_LIST="imageformats,printsupport,styles,platforminputcontexts,platforms,platformthemes,xcbglintegrations"
+     PLUGINS_LIST="generic,imageformats,platforminputcontexts,platforms,printsupport,xcbglintegrations"
   fi
+  QT_PLUGINS_LIST="$PLUGINS_LIST"
+  AC_ARG_ENABLE(QtPlugins,
+	 AS_HELP_STRING([--enable-QtPlugins@<:@=list@:>@],
+		  [default qt4 plugins: imageformats,accessible,accessiblebridge,inputmethods
+default qt5 plugins: generic,imageformats,platforminputcontexts,platforms,printsupport,xcbglintegrations]),
+    [QT_PLUGINS_LIST=$enableval],[QT_PLUGINS_LIST="$PLUGINS_LIST"])
+  case $QT_PLUGINS_LIST in
+  yes) QT_PLUGINS_LIST="$PLUGINS_LIST";;
+  no) unset QT_PLUGINS_LIST
+  esac
+
+  [[[ $enable_qt == no ]]] &&  unset QT_PLUGINS_LIST
+  for p in ${QT_PLUGINS_LIST//,/ }
+  do [[ -d $QT_PLUGINS_PATH/$p ]] || AC_MSG_ERROR(QT plugins not found!)
+  done
 
   # Qt Pipes
   AC_ARG_ENABLE(qtpipes,

@@ -69,8 +69,7 @@ AC_DEFUN([TM_PLATFORM],[
       AC_SUBST([CONFIG_PACKAGE],[GENERIC_PACKAGE])
       CONFIG_OS="GNU_LINUX"
       CONFIG_OS_SUFFIX="i386-pc-linux-gnu"
-      # -fPIC is required for Qt5 on Ubuntu 17.04 (adding -fPIE breaks it)
-      CONFIG_CXXOPTIMIZE="-O3 -fexpensive-optimizations -fPIC"
+      CONFIG_CXXOPTIMIZE="-O3 -fexpensive-optimizations"
       CONFIG_QTPIPES="yes"
       AC_DEFINE([STACK_SIZE], 0x1000000, [If not set during link])
    ;;
