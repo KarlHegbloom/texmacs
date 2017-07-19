@@ -814,6 +814,9 @@ DEVEL_VERSION
 PACKAGE
 DEVEL_VERSION_MAJOR
 DEVEL_VERSION_MINOR
+PKG_DATE
+PKG_MAINTAINER
+PKGREV
 SVNREV
 host_os
 host_vendor
@@ -3178,6 +3181,14 @@ $as_echo "$SVNREV" >&6; }
   fi
 
 
+
+
+# For maintainers to set via, i.e., debian/rules
+PKGREV="$PKGREV"
+
+PKG_MAINTAINER="$PKG_MAINTAINER"
+
+PKG_DATE="$PKG_DATE"
 
 
 PACKAGE="TeXmacs"
