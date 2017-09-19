@@ -5,3 +5,9 @@ texmacs.1
 *.kdev4
 .kdev4
 src/packages/debian/files
+*.deb
+*.ddeb
+*.changes
+*.dsc
+src/TeXmacs/progs/tm-mode.elc
+src/debian
