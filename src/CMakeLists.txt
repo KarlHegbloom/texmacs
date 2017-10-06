@@ -246,7 +246,6 @@ IF (NOT ${HAVE_DLOPEN})
   ENDIF (${HAVE_DLOPEN})
 ENDIF (NOT ${HAVE_DLOPEN})
 
-
 ### --------------------------------------------------------------------
 ### Handle different systems case by case
 ### --------------------------------------------------------------------
@@ -422,20 +421,34 @@ find_package(Iconv)
 ###   "USE_BAR;NOT USE_ZOT" OFF)
 
 option(LINKED_FREETYPE 1)
-
 find_package(Freetype REQUIRED)
 if (${FREETYPE_FOUND})
   set(USE_FREETYPE 1)
 endif (${FREETYPE_FOUND})
-
 cmake_dependent_option(LINKED_FREETYPE "Link Freetype at build time." ON
   "USE_FREETYPE;NOT HAVE_DLOPEN" ON)
 
 
 find_package(ZLIB)
 find_package(JPEG)
+find_package(PNG)
+
+option(LINKED_CAIRO 1)
 find_package(Cairo)
+if(${CAIRO_FOUND})
+  set(USE_CAIRO 1)
+endif(${CAIRO_FOUND})
+cmake_dependent_option(LINKED_CAIRO "Link Cairo at build time." ON
+  "USE_CAIRO;NOT HAVE_DLOPEN" ON)
+
+option(LINKED_IMLIB2 1)
 find_package(Imlib2)
+if(${IMLIB2_FOUND})
+  set(USE_IMLIB2 1)
+endif(${IMLIB2_FOUND})
+cmake_dependent_option(LINKED_IMLIB2 "Link imlib2 at build time." ON
+  "USE_IMLIB2;NOT HAVE_DLOPEN" ON)
+
 
 ### find_package(Axel) # What is/was Axel?
 
@@ -555,7 +568,7 @@ if(TEXMACS_GUI STREQUAL "Qt5")
 
     if(Qt5Svg_FOUND)
       set(QT_LIBRARIES ${QT_LIBRARIES} ${Qt5Svg_LIBRARIES})
-    endif(QT5Svg_FOUND)
+    endif(Qt5Svg_FOUND)
     if(Qt5X11Extras_FOUND)
       set(QT_LIBRARIES ${QT_LIBRARIES} ${Qt5X11Extras_LIBRARIES})
     endif(Qt5X11Extras_FOUND)
@@ -635,6 +648,7 @@ else(TEXMACS_GUI STREQUAL "Qt")
 
   set(CONFIG_X11 "X11 Widkit Ghostscript")
   set(CONFIG_GUI "X11")
+  set(TEXMACS_GUI "X11")
 
   message(STATUS "Enabling X11 GUI interface")
 
@@ -706,7 +720,12 @@ option(QTPIPES "use Qt pipes" ON)
 
 option(USE_SQLITE3 "Use SQLite3" ON)
 if (USE_SQLITE3)
-  option(LINKED_SQLITE3 "Use Linked SQLite3" ON)
+  pkg_check_modules(sqlite3 sqlite3)
+  if(sqlite3_FOUND)
+    set(USE_SQLITE3 1)
+  endif(sqlite3_FOUND)
+  cmake_dependent_option(LINKED_SQLITE3 "Use Linked SQLite3" ON
+    "USE_SQLITE3;NOT HAVE_DLOPEN" ON)
 endif (USE_SQLITE3)
 
 option(PDFHUMMUS_NO_TIFF "Disable TIFF in PDF Hummus" ON)
