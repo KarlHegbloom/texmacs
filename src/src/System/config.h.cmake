@@ -26,7 +26,6 @@
 #cmakedefine GUILE_VERSION @GUILE_VERSION@
 
 /* Guile version */
-#cmakedefine GUILE_VERSION @GUILE_VERSION@
 #cmakedefine CONFIG_GUILE_SERIAL @CONFIG_GUILE_SERIAL@
 
 /* Guile version */
@@ -41,14 +40,11 @@
 /* Guile version */
 #cmakedefine GUILE_D 1
 
-#cmakedefine GUILE_HEADER_18
-
 #cmakedefine SCM_SIZET @SCM_SIZET@
 
 #cmakedefine GUILE_NUM 0
 
 #cmakedefine GUILE_HEADER_18
-
 
 
 /* Define to 1 if the system has the type `FILE'. */
