@@ -781,7 +781,7 @@ if (LINKED_CAIRO)
 endif (LINKED_CAIRO)
 
 if (LINKED_IMLIB2)
-  set(TeXmacs_Libraries ${TeXmacs_Libraries} ${Imlib2_LIBRARIES})
+  set(TeXmacs_Libraries ${TeXmacs_Libraries} ${Imlib2_LDFLAGS})
 endif (LINKED_IMLIB2)
 
 if (LINKED_SQLITE3)
@@ -790,7 +790,7 @@ endif (LINKED_SQLITE3)
 
 SET(TeXmacs_Include_Dirs ${TeXmacs_Include_Dirs}
   ${Guile_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS}
-  ${Cairo_INCLUDE_DIRS} ${IMLIB2_INCLUDE_DIRS} ${JPEG_INCLUDE_DIRS}
+  ${Cairo_INCLUDE_DIRS} ${Imlib2_INCLUDE_DIRS} ${JPEG_INCLUDE_DIRS}
   ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS}
 )
 

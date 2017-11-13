@@ -9,13 +9,17 @@
 #
 
 if ! echo $PATH | grep -q qt5; then
-    if [ -d /opt/local/libexec/qt5/bin ]; then
+    if [ -d /opt/TeXmacs/libexec/qt5/bin ]; then
+	export PATH=/opt/TeXmacs/libexec/qt5/bin:$PATH
+    elif [ -d /opt/local/libexec/qt5/bin ]; then
         export PATH=/opt/local/libexec/qt5/bin:$PATH
     fi
 fi
 
 if ! echo $PATH | grep -q ccache; then
-    if [ -d /opt/local/libexec/ccache ]; then
+    if [ -d /opt/TeXmacs/libexec/ccache ]; then
+	export PATH=/opt/TeXmacs/libexec/ccache:$PATH
+    elif [ -d /opt/local/libexec/ccache ]; then
         export PATH=/opt/local/libexec/ccache:$PATH
     elif [ -d /usr/lib/ccache ]; then
         export PATH=/usr/lib/ccache:$PATH

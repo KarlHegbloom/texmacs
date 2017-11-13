@@ -240,22 +240,28 @@ endif (USE_SQLITE3)
 option (USE_FREETYPE "use Freetype" ON)
 if (USE_FREETYPE)
     find_package (Freetype REQUIRED)
-    cmake_dependent_option(LINKED_FREETYPE "Link Freetype at build time." ON
-      "USE_FREETYPE;NOT HAVE_DLOPEN" ON)
+    # cmake_dependent_option(LINKED_FREETYPE "Link Freetype at build time." ON
+    #   "USE_FREETYPE;NOT HAVE_DLOPEN" ON)
+    option(LINKED_FREETYPE "Link Freetype at build time." ON)
 endif (USE_FREETYPE)
 
+# TODO: fix bitrot in the Cairo plugin.
 option (USE_CAIRO "use Cairo" OFF)
 if (USE_CAIRO)
-    find_package(Cairo REQUIRED)
-    cmake_dependent_option(LINKED_CAIRO "Link Cairo at build time." ON
-      "USE_CAIRO;NOT HAVE_DLOPEN" ON)
+    # find_package(Cairo REQUIRED)
+    pkg_check_modules(Cairo cairo)
+    # cmake_dependent_option(LINKED_CAIRO "Link Cairo at build time." ON
+    #   "USE_CAIRO;NOT HAVE_DLOPEN" ON)
+    option(LINKED_CAIRO "Link Cairo at build time." ON)
 endif (USE_CAIRO)
 
-option (USE_IMLIB2 "use Imlib2" OFF)
+option (USE_IMLIB2 "use Imlib2" ON)
 if (USE_IMLIB2)
-    find_package(Imlib2 REQUIRED)
-    cmake_dependent_option(LINKED_IMLIB2 "Link imlib2 at build time." ON
-      "USE_IMLIB2;NOT HAVE_DLOPEN" ON)
+    # find_package(Imlib2 REQUIRED)
+    pkg_check_modules(Imlib2 imlib2)
+    # cmake_dependent_option(LINKED_IMLIB2 "Link imlib2 at build time." ON
+    #   "USE_IMLIB2;NOT HAVE_DLOPEN" ON)
+    option(LINKED_IMLIB2 "Link imlib2 at build time." ON)
 endif (USE_IMLIB2)
 
 option (USE_SPARKLE "use Sparkle" OFF)
