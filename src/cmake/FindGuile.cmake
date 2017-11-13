@@ -10,7 +10,7 @@ option(TRY_GUILE18_CONFIG_FIRST "Try guile18-config before guile-config" ON)
 option(GUILE_HEADER_18 "<libguile18.h>" ON)
 
 if(TRY_GUILE18_CONFIG_FIRST)
-    find_program(GUILECONFIG_EXECUTABLE NAMES guile18-config guile-config guile22-config)
+  find_program(GUILECONFIG_EXECUTABLE NAMES guile18-config guile-config guile22-config)
 else(TRY_GUILE18_CONFIG_FIRST)
   find_program(GUILECONFIG_EXECUTABLE NAMES guile-config guile22-config guile18-config)
 endif(TRY_GUILE18_CONFIG_FIRST)
@@ -74,16 +74,21 @@ IF(GUILECONFIG_EXECUTABLE)
            
 
 
-    SET(Guile_FOUND YES)
-    SET(Guile_INCLUDE_DIRS ${_guile_includes})
-    SET(Guile_LIBRARIES ${_guile_libraries})
-    SET(Guile_CFLAGS ${_guile_definitions_with_prefix})
-    
+    set(Guile_FOUND YES)
+    set(Guile_INCLUDE_DIRS ${_guile_includes})
+    set(Guile_LIBRARIES ${_guile_libraries})
+    set(Guile_CFLAGS ${_guile_definitions_with_prefix})
+    set(Guile_LIBDIR )
+    if(_guileconfig_libdir)
+      string(STRIP ${_guileconfig_libdir} Guile_LIBDIR)
+    endif(_guileconfig_libdir)
+
     MESSAGE(">>>" "${Guile_INCLUDE_DIRS}")
     MESSAGE(">>>" "${Guile_LIBRARIES}")
     MESSAGE(">>>" "${Guile_CFLAGS}")
     MESSAGE(">>>" "${_guileconfig_version}")
-    
+    MESSAGE(">>>" "${Guile_LIBDIR}")
+
   ELSE( NOT _return_VALUE)
 
     MESSAGE(STATUS "guile-config not working; I assume guile is not installed.")

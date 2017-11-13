@@ -32,6 +32,9 @@ if [ ! "${DISTRIBUTOR_ID#*Ubuntu}" = "$DISTRIBUTOR_ID" ] ; then
 fi
 
 PATH="$TEXMACS_BIN_PATH/bin:$PATH"
+if [ -n "@Guile_LIBDIR@" ]; then
+    @CONFIG_LIB_PATH@="@Guile_LIBDIR@${@CONFIG_LIB_PATH@+":$@CONFIG_LIB_PATH@"}"
+fi
 @CONFIG_LIB_PATH@="$TEXMACS_BIN_PATH/lib${@CONFIG_LIB_PATH@+":$@CONFIG_LIB_PATH@"}"
 export PATH @CONFIG_LIB_PATH@
 

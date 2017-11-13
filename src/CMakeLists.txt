@@ -163,6 +163,8 @@ endif("${PKG_DATE}" STREQUAL "")
 
 message(STATUS "--  ${PKG_MAINTAINER}  ${PKG_DATE}")
 
+set(CMAKE_MODULE_PATH ${TEXMACS_SOURCE_DIR}/cmake)
+
 
 ### --------------------------------------------------------------------
 ### Include standard modules
@@ -175,35 +177,17 @@ include(CheckTypeSize)
 include(FindPkgConfig)
 include(CheckCSourceCompiles)
 include(CMakeDependentOption)
-
+include(FindX11)
 
 ### --------------------------------------------------------------------
-### Check for standard functionalities
+### Options
 ### --------------------------------------------------------------------
+IF(NOT TEXMACS_GUI)
+  SET(TEXMACS_GUI "Qt" CACHE STRING "TeXmacs Gui (Qt, X11, Aqua)")
+ENDIF(NOT TEXMACS_GUI)
 
-check_type_size(FILE     HAVE_FILE)
-check_type_size(intptr_t HAVE_INTPTR_T)
-check_type_size(time_t   HAVE_TIME_T)
+option (QTPIPES "use Qt pipes" ON)
 
-check_include_file(inttypes.h  HAVE_INTTYPES_H)
-check_include_file(memory.h    HAVE_MEMORY_H)
-check_include_file(stdlib.h    HAVE_STDLIB_H)
-check_include_file(strings.h   HAVE_STRINGS_H)
-check_include_file(string.h    HAVE_STRING_H)
-check_include_file(sys/stat.h  HAVE_SYS_STAT_H)
-check_include_file(unistd.h    HAVE_UNISTD_H)
-check_include_file(X11/Xlib.h  HAVE_X11_XLIB_H)
-check_include_file(X11/Xutil.h HAVE_X11_XUTIL_H)
-check_include_file(pty.h       HAVE_PTY_H)
-check_include_file(util.h      HAVE_UTIL_H)
-
-check_function_exists(gettimeofday HAVE_GETTIMEOFDAY)
-
-check_function_exists(setenv       HAVE_SETENV)
-#check_function_exists(putenv       HAVE_PUTENV)
-if(${HAVE_SETENV})
-  set(CONFIG_STD_SETENV "#define STD_SETENV")
-endif(${HAVE_SETENV})
 
 ### --------------------------------------------------------------------
 ### Check for dl library
@@ -246,6 +230,78 @@ IF (NOT ${HAVE_DLOPEN})
   ENDIF (${HAVE_DLOPEN})
 ENDIF (NOT ${HAVE_DLOPEN})
 
+
+option (USE_SQLITE3 "Use SQLite3" ON)
+if (USE_SQLITE3)
+    find_package (SQLite3 REQUIRED)
+    option (LINKED_SQLITE3 "Use Linked SQLite3" ON)
+endif (USE_SQLITE3)
+
+option (USE_FREETYPE "use Freetype" ON)
+if (USE_FREETYPE)
+    find_package (Freetype REQUIRED)
+    cmake_dependent_option(LINKED_FREETYPE "Link Freetype at build time." ON
+      "USE_FREETYPE;NOT HAVE_DLOPEN" ON)
+endif (USE_FREETYPE)
+
+option (USE_CAIRO "use Cairo" OFF)
+if (USE_CAIRO)
+    find_package(Cairo REQUIRED)
+    cmake_dependent_option(LINKED_CAIRO "Link Cairo at build time." ON
+      "USE_CAIRO;NOT HAVE_DLOPEN" ON)
+endif (USE_CAIRO)
+
+option (USE_IMLIB2 "use Imlib2" OFF)
+if (USE_IMLIB2)
+    find_package(Imlib2 REQUIRED)
+    cmake_dependent_option(LINKED_IMLIB2 "Link imlib2 at build time." ON
+      "USE_IMLIB2;NOT HAVE_DLOPEN" ON)
+endif (USE_IMLIB2)
+
+option (USE_SPARKLE "use Sparkle" OFF)
+
+option(PDFHUMMUS_NO_TIFF "Disable TIFF in PDF Hummus" ON)
+
+find_package(ZLIB)
+find_package(JPEG)
+find_package(PNG)
+find_package(Iconv)
+
+if (APPLE)
+  set(MACOSX_EXTENSIONS 1)
+  set(OS_MACOS 1)
+  option(MACOS_QT_MENU "Disable MacOS native menu" ON)
+endif (APPLE)
+
+
+### --------------------------------------------------------------------
+### Check for standard functionalities
+### --------------------------------------------------------------------
+
+check_type_size(FILE     HAVE_FILE)
+check_type_size(intptr_t HAVE_INTPTR_T)
+check_type_size(time_t   HAVE_TIME_T)
+
+check_include_file(inttypes.h  HAVE_INTTYPES_H)
+check_include_file(memory.h    HAVE_MEMORY_H)
+check_include_file(stdlib.h    HAVE_STDLIB_H)
+check_include_file(strings.h   HAVE_STRINGS_H)
+check_include_file(string.h    HAVE_STRING_H)
+check_include_file(sys/stat.h  HAVE_SYS_STAT_H)
+check_include_file(unistd.h    HAVE_UNISTD_H)
+check_include_file(X11/Xlib.h  HAVE_X11_XLIB_H)
+check_include_file(X11/Xutil.h HAVE_X11_XUTIL_H)
+check_include_file(pty.h       HAVE_PTY_H)
+check_include_file(util.h      HAVE_UTIL_H)
+
+check_function_exists(gettimeofday HAVE_GETTIMEOFDAY)
+
+check_function_exists(setenv       HAVE_SETENV)
+#check_function_exists(putenv       HAVE_PUTENV)
+if(${HAVE_SETENV})
+  set(CONFIG_STD_SETENV "#define STD_SETENV")
+endif(${HAVE_SETENV})
+
 ### --------------------------------------------------------------------
 ### Handle different systems case by case
 ### --------------------------------------------------------------------
@@ -258,8 +314,8 @@ ENDIF (NOT ${HAVE_DLOPEN})
 ### CMAKE_C_LIBRARY_ARCHITECTURE "x86_64-linux-gnu"
 ### CMAKE_C_PLATFORM_ID "Linux"
 
-SET(CONFIG_OS "GNU_LINUX")
-SET(CONFIG_OS_SUFFIX "gnu-linux")
+#SET(CONFIG_OS "GNU_LINUX")
+#SET(CONFIG_OS_SUFFIX "gnu-linux")
 
 ### CMAKE_CXX_FLAGS ""
 ### CMAKE_CXX_FLAGS_DEBUG "-g"
@@ -324,6 +380,12 @@ SET(CONFIG_CXXTEMPLATE "")
 
 SET(CONFIG_SO "so")
 SET(CONFIG_LIB_PATH "LD_LIBRARY_PATH")
+
+if(APPLE)
+  set(CONFIG_SO "dylib")
+  set(CONFIG_LIB_PATH "DYLD_LIBRARY_PATH")
+endif(APPLE)
+
 SET(CONFIG_CHMOD "chmod -f")
 SET(CONFIG_CXXOPTIMIZE "-ggdb3 -O3 -fexpensive-optimizations -fno-rtti")
 SET(CONFIG_BSTATIC "-Wl,-Bstatic")
@@ -397,61 +459,10 @@ set(PACKAGE_URL 1)
 set(PACKAGE_VERSION 1)
 
 ### --------------------------------------------------------------------
-### Options
-### --------------------------------------------------------------------
-
-
-
-
-### --------------------------------------------------------------------
 ### Experimental options
 ### --------------------------------------------------------------------
 
 option(EXPERIMENTAL "Enable experimental options" OFF)
-
-### --------------------------------------------------------------------
-###  Test for Libraries
-### --------------------------------------------------------------------
-
-# ? find_package(Cygwin)
-
-find_package(Iconv)
-
-### cmake_dependent_option(USE_FOO "Use Foo" ON
-###   "USE_BAR;NOT USE_ZOT" OFF)
-
-option(LINKED_FREETYPE 1)
-find_package(Freetype REQUIRED)
-if (${FREETYPE_FOUND})
-  set(USE_FREETYPE 1)
-endif (${FREETYPE_FOUND})
-cmake_dependent_option(LINKED_FREETYPE "Link Freetype at build time." ON
-  "USE_FREETYPE;NOT HAVE_DLOPEN" ON)
-
-
-find_package(ZLIB)
-find_package(JPEG)
-find_package(PNG)
-
-option(LINKED_CAIRO 1)
-find_package(Cairo)
-if(${CAIRO_FOUND})
-  set(USE_CAIRO 1)
-endif(${CAIRO_FOUND})
-cmake_dependent_option(LINKED_CAIRO "Link Cairo at build time." ON
-  "USE_CAIRO;NOT HAVE_DLOPEN" ON)
-
-option(LINKED_IMLIB2 1)
-find_package(Imlib2)
-if(${IMLIB2_FOUND})
-  set(USE_IMLIB2 1)
-endif(${IMLIB2_FOUND})
-cmake_dependent_option(LINKED_IMLIB2 "Link imlib2 at build time." ON
-  "USE_IMLIB2;NOT HAVE_DLOPEN" ON)
-
-
-### find_package(Axel) # What is/was Axel?
-
 
 ### --------------------------------------------------------------------
 ###  Guile
@@ -536,7 +547,8 @@ set(TM_QT4_MIN_VERSION 4.8.7)
 
 
 if(TEXMACS_GUI STREQUAL "Qt")
-  find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui Widgets PrintSupport)
+  #find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui Widgets PrintSupport)
+  find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui PrintSupport)
   if(Qt5_FOUND)
     set(TEXMACS_GUI "Qt5")
   else(Qt5_FOUND)
@@ -554,24 +566,27 @@ endif(TEXMACS_GUI STREQUAL "Qt")
 
 if(TEXMACS_GUI STREQUAL "Qt5")
 
-  find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui Widgets PrintSupport REQUIRED)
+  #find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui Widgets PrintSupport REQUIRED)
+  find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui PrintSupport REQUIRED)
 
   if(Qt5_FOUND)
     # TODO: Test this...
-    set(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
+    #set(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
+    set(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
     # SET(QT_LIBRARIES Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport)
 
-    set(Qt5Svg_INCLUDE_DIRS )
-    set(Qt5X11Extras_INCLUDE_DIRS )
-    find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Svg X11Extras) # not REQUIRED; can it even use these?
+    # set(Qt5Svg_INCLUDE_DIRS )
+    # set(Qt5X11Extras_INCLUDE_DIRS )
+    # find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Svg X11Extras) # not REQUIRED; can it even
+    # use these?
     # find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS QtHelp UiPlugin UiTools WebEngine WebEngineCore WebEngineWidgets)
 
-    if(Qt5Svg_FOUND)
-      set(QT_LIBRARIES ${QT_LIBRARIES} ${Qt5Svg_LIBRARIES})
-    endif(Qt5Svg_FOUND)
-    if(Qt5X11Extras_FOUND)
-      set(QT_LIBRARIES ${QT_LIBRARIES} ${Qt5X11Extras_LIBRARIES})
-    endif(Qt5X11Extras_FOUND)
+    # if(Qt5Svg_FOUND)
+    #   set(QT_LIBRARIES ${QT_LIBRARIES} ${Qt5Svg_LIBRARIES})
+    # endif(Qt5Svg_FOUND)
+    # if(Qt5X11Extras_FOUND)
+    #   set(QT_LIBRARIES ${QT_LIBRARIES} ${Qt5X11Extras_LIBRARIES})
+    # endif(Qt5X11Extras_FOUND)
 
     if(WIN32)
       set(GUI_TYPE WIN32)
@@ -580,10 +595,10 @@ if(TEXMACS_GUI STREQUAL "Qt5")
     include_directories(
       ${Qt5Core_INCLUDE_DIRS}
       ${Qt5Gui_INCLUDE_DIRS}
-      ${Qt5Widgets_INCLUDE_DIRS}
+      # ${Qt5Widgets_INCLUDE_DIRS}
       ${Qt5PrintSupport_INCLUDE_DIRS}
-      ${Qt5Svg_INCLUDE_DIRS}
-      ${Qt5X11Extras_INCLUDE_DIRS}
+      # ${Qt5Svg_INCLUDE_DIRS}
+      # ${Qt5X11Extras_INCLUDE_DIRS}
       )
     # include(${QT_USE_FILE})
     add_definitions("-DQTTEXMACS")
@@ -716,25 +731,6 @@ set(PDF_RENDERER 1)
 set(STDC_HEADERS 1)
 set(USE_STACK_TRACE 1)
 
-option(QTPIPES "use Qt pipes" ON)
-
-option(USE_SQLITE3 "Use SQLite3" ON)
-if (USE_SQLITE3)
-  pkg_check_modules(sqlite3 sqlite3)
-  if(sqlite3_FOUND)
-    set(USE_SQLITE3 1)
-  endif(sqlite3_FOUND)
-  cmake_dependent_option(LINKED_SQLITE3 "Use Linked SQLite3" ON
-    "USE_SQLITE3;NOT HAVE_DLOPEN" ON)
-endif (USE_SQLITE3)
-
-option(PDFHUMMUS_NO_TIFF "Disable TIFF in PDF Hummus" ON)
-
-if (APPLE)
-  set(MACOSX_EXTENSIONS 1)
-  set(OS_MACOS 1)
-endif (APPLE)
-
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-register -include config.h")
 
 configure_file(${TEXMACS_SOURCE_DIR}/src/System/config.h.cmake ${TEXMACS_SOURCE_DIR}/src/System/config.h)
@@ -856,19 +852,19 @@ install(FILES TeXmacs/misc/pixmaps/TeXmacs.xpm DESTINATION share/pixmaps)
 ### share/man
 set(TOOLS "texmacs" "fig2ps")
 set(MAN_SECTION "1")
-foreach(TOOL ${TOOLS})
-set(TOOL_MANFILE "${CMAKE_CURRENT_SOURCE_DIR}/misc/man/${TOOL}.${MAN_SECTION}")
-set(TOOL_MANFILE_GZ "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}.${MAN_SECTION}.gz")
-  add_custom_command(
-    OUTPUT "${TOOL_MANFILE_GZ}"
-    COMMAND gzip -c "${TOOL_MANFILE}" > "${TOOL_MANFILE_GZ}"
-    MAIN_DEPENDENCY "${TOOL_MANFILE}"
-    COMMENT "Building ${TOOL} man page"
-    VERBATIM
-  )
-  add_custom_target("${TOOL}.${MAN_SECTION}" ALL DEPENDS "${TOOL_MANFILE_GZ}")
-  install(FILES "${TOOL_MANFILE_GZ}" DESTINATION "share/man/man${MAN_SECTION}")
-endforeach(TOOL)
+# foreach(TOOL ${TOOLS})
+#   set(TOOL_MANFILE "${CMAKE_CURRENT_SOURCE_DIR}/misc/man/${TOOL}.${MAN_SECTION}")
+#   set(TOOL_MANFILE_GZ "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}.${MAN_SECTION}.gz")
+#   add_custom_command(
+#     OUTPUT "${TOOL_MANFILE_GZ}"
+#     COMMAND gzip -c "${TOOL_MANFILE}" > "${TOOL_MANFILE_GZ}"
+#     MAIN_DEPENDENCY "${TOOL_MANFILE}"
+#     COMMENT "Building ${TOOL} man page"
+#     VERBATIM
+#     )
+#   add_custom_target("${TOOL}.${MAN_SECTION}" ALL DEPENDS "${TOOL_MANFILE_GZ}")
+#   install(FILES "${TOOL_MANFILE_GZ}" DESTINATION "share/man/man${MAN_SECTION}")
+# endforeach(TOOL)
 
 
 ### Last so everything is defined when it happens.

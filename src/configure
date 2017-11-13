@@ -18725,9 +18725,29 @@ $as_echo "$as_me: WARNING: Drop duplicate flag $LC_PREPEND_LIST_flag" >&2;}
     else CXXFLAGS=$(echo $CXXFLAGS${LC_GETPOP_FLAG_tail#$LC_PREPEND_LIST_flag})
     fi
 
-  LC_PREPEND_LIST_flag=$(echo $LC_PREPEND_LIST_flag)    # normalize whitespaces
-  LC_PREPEND_LIST_flag=${LC_PREPEND_LIST_flag//\/\//\/}   # normalize path separator
-  LC_PREPEND_LIST_flag=${LC_PREPEND_LIST_flag//\'}   # remove quote
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt" >&5
+$as_echo_n "checking for Qt... " >&6; }
+  # If we have Qt5 or later in the path, we're golden
+  ver=`qmake --version | grep -o "Qt version ."`
+  if test "$ver" ">" "Qt version 4"; then
+    have_qt=yes
+    # This pro file dumps qmake's variables, but it only works on Qt 5 or later
+    am_have_qt_pro=`mktemp`
+    am_have_qt_makefile=`mktemp`
+    # http://qt-project.org/doc/qt-5/qmake-variable-reference.html#qt
+    # the below list is not complete because I do not have every module installed on my laptop ~karlheg
+    cat > $am_have_qt_pro << EOF
+qtHaveModule(core):              QT += core
+qtHaveModule(gui):               QT += gui
+qtHaveModule(printsupport):      QT += printsupport
+percent.target = %
+percent.commands = @echo -n "\$(\$(@))\ "
+QMAKE_EXTRA_TARGETS += percent
+EOF
+    qmake $am_have_qt_pro -o $am_have_qt_makefile
+    QT_CXXFLAGS=`make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
+    QT_LIBS=`make -s -f $am_have_qt_makefile LIBS`
+    rm $am_have_qt_pro $am_have_qt_makefile
 
   if [[ "$LC_PREPEND_LIST_flag" =~ $(echo "^-(l|L|D)[[:space:]]+([^[:space:]].*)$") ]]
   then LC_PREPEND_LIST_flag=-${BASH_REMATCH[1]}${BASH_REMATCH[2]}

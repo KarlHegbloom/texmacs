@@ -8,14 +8,26 @@
 # prior to building right now to get a working build.
 #
 
+if ! echo $PATH | grep -q qt5; then
+    if [ -d /opt/local/libexec/qt5/bin ]; then
+        export PATH=/opt/local/libexec/qt5/bin:$PATH
+    fi
+fi
+
 if ! echo $PATH | grep -q ccache; then
-    export PATH=/usr/lib/ccache:$PATH
+    if [ -d /opt/local/libexec/ccache ]; then
+        export PATH=/opt/local/libexec/ccache:$PATH
+    elif [ -d /usr/lib/ccache ]; then
+        export PATH=/usr/lib/ccache:$PATH
+    fi
 fi
 
 #
-# For run-from-source so that .scm can be modified in source directories rather than out in installed system locations, and then a
-# restart of texmacs will pick up the changed scm. Modifications to C++ or whatever can be picked up quickly by a rebuild,
-# especially with ccache in use, speeding builds tremendously.
+# For run-from-source so that .scm can be modified in source
+# directories rather than out in installed system locations, and then
+# a restart of texmacs will pick up the changed scm. Modifications to
+# C++ or whatever can be picked up quickly by a rebuild, especially
+# with ccache in use, speeding builds tremendously.
 #
 #export TEXMACS_PATH="/home/karlheg/src/TeXmacs/texmacs-git-svn-guile-1.8/src/TeXmacs"
 #export TEXMACS_BIN_PATH="/home/karlheg/src/TeXmacs/texmacs-git-svn-guile-1.8/src/debian/texmacs/usr/lib/texmacs/TeXmacs"
@@ -26,8 +38,9 @@ export GUILE_LDFLAGS="`pkg-config --static --libs guile-1.8`"
 export GUILE_DATA_PATH="`pkg-config --variable=datadir guile-1.8`"
 export GUILE_VERSION="`pkg-config --modversion guile-1.8`"
 
+
 #export CCACHE_PREFIX=/usr/bin/distcc
 #export DISTCC_HOSTS="localhost/8 192.168.1.64/4"
 #export DEB_BUILD_OPTIONS=parallel=12
 
-export DEB_BUILD_OPTIONS="parallel=8 nostrip" #noautodbgsym
+export DEB_BUILD_OPTIONS="parallel=8 nostrip" #" noautodbgsym"

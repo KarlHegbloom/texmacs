@@ -22,6 +22,8 @@
 /* gs lib */
 #cmakedefine XXXGS_LIB "@GS_LIB@"
 
+/* Guile version */
+#cmakedefine GUILE_VERSION @GUILE_VERSION@
 
 /* Guile version */
 #cmakedefine GUILE_VERSION @GUILE_VERSION@
@@ -44,6 +46,8 @@
 #cmakedefine SCM_SIZET @SCM_SIZET@
 
 #cmakedefine GUILE_NUM 0
+
+#cmakedefine GUILE_HEADER_18
 
 
 
