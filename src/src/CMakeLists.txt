@@ -694,9 +694,9 @@ SET(TeXmacs_Qt_SRCS
     ./Plugins/Qt/QTMTreeModel.cpp
     ./Plugins/Qt/QTMWidget.cpp
     ./Plugins/Qt/QTMWindow.cpp
-)
+    )
 
-SET(TeXmacs_Qt_Moc_HDRS
+  SET(TeXmacs_Qt_Moc_HDRS
     ./Plugins/Qt/QTMApplication.hpp
     ./Plugins/Qt/QTMFileDialog.hpp
     ./Plugins/Qt/QTMGuiHelper.hpp
@@ -712,14 +712,14 @@ SET(TeXmacs_Qt_Moc_HDRS
     ./Plugins/Qt/QTMTreeModel.hpp
     ./Plugins/Qt/QTMWidget.hpp
     ./Plugins/Qt/QTMWindow.hpp
-)
+    )
 
 
-### --------------------------------------------------------------------
-### Aqua interface
-### --------------------------------------------------------------------
+  ### --------------------------------------------------------------------
+  ### Aqua interface
+  ### --------------------------------------------------------------------
 
-SET(TeXmacs_Cocoa_SRCS
+  SET(TeXmacs_Cocoa_SRCS
     ./Plugins/Cocoa/aqua_dialogues.mm
     ./Plugins/Cocoa/aqua_gui.mm
     ./Plugins/Cocoa/aqua_menu.mm
@@ -729,16 +729,16 @@ SET(TeXmacs_Cocoa_SRCS
     ./Plugins/Cocoa/mac_utilities.mm
     ./Plugins/Cocoa/TMButtonsController.m
     ./Plugins/Cocoa/TMView.mm
-)
+    )
 
-set (TeXmacs_MacOS_SRCS
+  set (TeXmacs_MacOS_SRCS
     ./Plugins/MacOS/HIDRemote.m
     ./Plugins/MacOS/mac_images.mm
     ./Plugins/MacOS/mac_spellservice.mm
     ./Plugins/MacOS/mac_utilities.mm
-)
+    )
 
-if (APPLE AND TEXMACS_GUI STREQUAL "X11")
+  if (APPLE AND TEXMACS_GUI STREQUAL "X11")
     set (TeXmacs_MacOS_SRCS ${TeXmacs_MacOS_SRCS} ./Plugins/MacOS/mac_app.mm)
 endif (APPLE AND TEXMACS_GUI STREQUAL "X11")
 
