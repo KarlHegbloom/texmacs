@@ -3,6 +3,9 @@
 /* check assertions in code */
 #cmakedefine DEBUG_ASSERT 1
 
+/* debugging build */
+#cmakedefine DEBUG_ON 1
+
 /* Defined if ...-style argument passing works */
 #cmakedefine DOTS_OK 1
 
