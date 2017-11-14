@@ -1,20 +1,20 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-
-# Uncomment this to turn on verbose mode.
-export DH_VERBOSE := 1
 
 BUILD_DIR := obj-$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+export DH_VERBOSE := 1
+
+ifdef $(DH_VERBOSE)
+  _CMAKE_VERBOSE_MAKEFILE_ := -DCMAKE_VERBOSE_MAKEFILE=ON
+else
+  _CMAKE_VERBOSE_MAKEFILE_ := -DCMAKE_VERBOSE_MAKEFILE=OFF
+endif
+
 CMAKE_OPTS :=					\
   -DCMAKE_EXPORT_COMPILE_COMMANDS=1		\
+  $(_CMAKE_VERBOSE_MAKEFILE_)			\
   -DCMAKE_INSTALL_PREFIX=/usr			\
-  -DCMAKE_VERBOSE_MAKEFILE=ON			\
   -DCMAKE_INSTALL_SYSCONFDIR=/etc		\
   -DCMAKE_INSTALL_LOCALSTATEDIR=/var		\
   -DTRY_GUILE18_CONFIG_FIRST=ON			\
@@ -28,9 +28,8 @@ CMAKE_OPTS :=					\
 
 cmake:
 	(mkdir ${BUILD_DIR}; \
-	cd ${BUILD_DIR};     \
-	cmake ${CMAKE_OPTS} ..)
-
+	 cd ${BUILD_DIR};     \
+	 cmake ${CMAKE_OPTS} ..)
 
 debian/changelog:
 	cp $@.in $@
