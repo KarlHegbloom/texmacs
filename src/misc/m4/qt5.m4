@@ -136,8 +136,8 @@ percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
 EOF
     qmake $am_have_qt_pro -o $am_have_qt_makefile
-    QT_CXXFLAGS=`make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
-    QT_LIBS=`make -s -f $am_have_qt_makefile LIBS`
+    QT_CXXFLAGS=`cd $(dirname  $am_have_qt_makefile ); make -f $am_have_qt_makefile CXXFLAGS INCPATH`
+    QT_LIBS=`cd $(dirname  $am_have_qt_makefile ); make -f $am_have_qt_makefile LIBS`
     rm $am_have_qt_pro $am_have_qt_makefile
 
     # Look for specific tools in $PATH
@@ -218,7 +218,7 @@ EOF
         cat ax_qt_test.h >&AS_MESSAGE_LOG_FD
       else
         ax_try_2="$CXX $QT_CXXFLAGS -c $CXXFLAGS -o moc_ax_qt_test.o moc_ax_qt_test.$ac_ext >/dev/null 2>/dev/null"
-        AC_TRY_EVAL(ax_try_2)
+         AC_TRY_EVAL(ax_try_2)
         if test x"$ac_status" != x0; then
           echo "$ax_err_2" >&AS_MESSAGE_LOG_FD
           echo "configure: could not compile:" >&AS_MESSAGE_LOG_FD
