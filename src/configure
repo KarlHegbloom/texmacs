@@ -1562,7 +1562,7 @@ if test -n "$ac_init_help"; then
                           default qt4 plugins:
                           imageformats,accessible,accessiblebridge,inputmethods
                           default qt5 plugins:
-                          generic,imageformats,platforminputcontexts,platforms,printsupport
+                          generic,imageformats,platforms,printsupport
   --enable-qtpipes        replace UNIX pipes by Qt pipes
   --enable-cocoa          replace X11 by Cocoa interface
   --disable-pdf-renderer  use hummus support for native pdf exports
@@ -20015,18 +20015,14 @@ qtHaveModule(help):              QT += help
 qtHaveModule(network):           QT += network
 qtHaveModule(platformheaders):   QT += platformheaders
 qtHaveModule(printsupport):      QT += printsupport
-qtHaveModule(svg):               QT += svg
-qtHaveModule(webchannel):        QT += webchannel
-qtHaveModule(webkit):            QT += webkit
 qtHaveModule(widgets):           QT += widgets
-qtHaveModule(x11extras):         QT += x11extras
 percent.target = %
 percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
 EOF
     qmake $am_have_qt_pro -o $am_have_qt_makefile
-    QT_CXXFLAGS=`make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
-    QT_LIBS=`make -s -f $am_have_qt_makefile LIBS`
+    QT_CXXFLAGS=`cd $(dirname  $am_have_qt_makefile ); make -f $am_have_qt_makefile CXXFLAGS INCPATH`
+    QT_LIBS=`cd $(dirname  $am_have_qt_makefile ); make -f $am_have_qt_makefile LIBS`
     rm $am_have_qt_pro $am_have_qt_makefile
 
     # Look for specific tools in $PATH
@@ -20123,7 +20119,7 @@ EOF
         cat ax_qt_test.h >&5
       else
         ax_try_2="$CXX $QT_CXXFLAGS -c $CXXFLAGS -o moc_ax_qt_test.o moc_ax_qt_test.$ac_ext >/dev/null 2>/dev/null"
-        { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ax_try_2\""; } >&5
+         { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ax_try_2\""; } >&5
   (eval $ax_try_2) 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
@@ -23947,9 +23943,7 @@ fi
 
   # Qt Plugins list
   if test "$QT5_AVAILABLE" = yes; then
-    QT_PLUGINS_LIST="imageformats"
-  else
-    QT_PLUGINS_LIST="accessible,imageformats"
+     PLUGINS_LIST="generic,imageformats,platforms,printsupport"
   fi
 
   # Qt Pipes
