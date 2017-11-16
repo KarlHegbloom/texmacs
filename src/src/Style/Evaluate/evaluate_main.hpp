@@ -13,6 +13,7 @@
 #define EVALUATE_MAIN_H
 #include "../Environment/environment.hpp"
 #include "../Memorizer/memorizer.hpp"
+#include "colors.hpp"
 
 extern environment std_env;
 

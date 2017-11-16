@@ -14,6 +14,8 @@
 #include "std_environment.hpp"
 #include "vars.hpp"
 #include "scheme.hpp"
+#include "env.hpp"
+#include "new_buffer.hpp"
 
 extern int script_status;
 
@@ -139,13 +141,13 @@ rewrite_impl (tree t) {
     }
   case WITH_PACKAGE:
     {
-      string file_name= exec_string (t[0]);
-      return with_package_definitions (file_name, t[1]);
+	string file_name= exec_string (t[0]);
+	return with_package_definitions (file_name, t[1]);
     }
   case REWRITE_INACTIVE:
     {
-#ifdef CLASSICAL_MACRO_EXPANSION      
-      if ((!is_func (t[0], ARG)) || is_compound (t[0][0]))
+#ifdef CLASSICAL_MACRO_EXPANSION
+	if ((!is_func (t[0], ARG)) || is_compound (t[0][0]))
 	return evaluate_error ("invalid rewrite-inactive");
       if (macro_top_level (std_env))
 	return evaluate_error ("undefined", t[0][0]);

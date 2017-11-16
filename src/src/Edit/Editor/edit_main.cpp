@@ -24,6 +24,7 @@
 
 #ifdef EXPERIMENTAL
 #include "../../Style/Memorizer/clean_copy.hpp"
+#include "../../Style/Memorizer/memorizer.hpp"
 #endif
 
 #ifdef USE_GS
@@ -220,7 +221,7 @@ edit_main_rep::print_doc (url name, bool conform, int first, int last) {
   if (!use_ps () && ps)
     name= url_temp (".pdf");
 #endif
-  
+
   string medium = env->get_string (PAGE_MEDIUM);
   if (conform && (medium != "paper")) conform= false;
   // FIXME: better command for conform printing
@@ -264,7 +265,7 @@ edit_main_rep::print_doc (url name, bool conform, int first, int last) {
 
   // Print pages
   renderer ren= printer (name, dpi, pages, page_type, landsc, w/cm, h/cm);
-  
+
   if (ren->is_started ()) {
     int i;
     ren->set_metadata ("title", get_metadata ("title"));
@@ -318,8 +319,33 @@ edit_main_rep::print_buffer (string first, string last) {
   target= url_temp (".ps");
 #endif
   print_doc (target, false, as_int (first), as_int (last));
-  system (get_printing_cmd (), target);  // Send the document to the printer
-  set_message ("Done printing", "print buffer");
+	cout<<"CMD:"<<get_printing_cmd ()<<":"<<target<<"\n";
+  //system (printing_cmd, target);  // Send the document to the printer
+
+
+	array<string> cmd;
+	cmd << string("cmd");
+	cmd  << string("/c");
+  cmd << '"' * get_printing_cmd () * '"';
+#ifdef OS_MINGW
+  cmd << string ("/P");
+#endif
+  cmd << concretize (target);
+  array<int> out; //out << 1; out << 2;
+  //cout << "cmd= " << cmd << LF;
+  array<string> ret= evaluate_system (cmd, array<int> (), array<string> (), out);
+  //cout << "ret= " << ret << LF;
+	/*
+  if (ret [0] != "0" || ret[2] != "") {
+    //convert_error << ret[1] << LF;
+    convert_error << "for file " << target << LF;
+    convert_error << ret[2] << LF;
+    return ;
+	}
+	*/
+
+
+	set_message ("Done printing", "print buffer");
   ::remove (target);
 }
 
@@ -327,7 +353,7 @@ edit_main_rep::print_buffer (string first, string last) {
 void
 edit_main_rep::print_buffer (string first, string last) {
   // in Qt this is the main entry point to the printing subsystem.
-  // the other routines (print_to_file, ...) are overriden since all fine tuning 
+  // the other routines (print_to_file, ...) are overriden since all fine tuning
   // is made here via the Qt print dialog
   bool to_file, landscape;
   url name = url_none();
@@ -338,7 +364,7 @@ edit_main_rep::print_buffer (string first, string last) {
       print_doc (name, false, as_int (first), as_int (last));
       if (!to_file) {
         string cmd = printing_cmd * " -P" * printer;
-        system (cmd, name);  
+        system (cmd, name);
         ::remove (name);
       }
   }
@@ -398,7 +424,7 @@ edit_main_rep::graphics_file_to_clipboard (url name) {
 #ifdef QTTEXMACS
   the_gui->put_graphics_on_clipboard (name);
   return true;
-#else 
+#else
   return false;
 #endif
 }
