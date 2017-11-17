@@ -313,39 +313,10 @@ edit_main_rep::print_to_file (url name, string first, string last) {
 void
 edit_main_rep::print_buffer (string first, string last) {
   url target;
-#ifdef OS_MINGW
-  target= use_pdf ()? url_temp (".pdf"): url_temp (".ps");
-#else
   target= url_temp (".ps");
-#endif
   print_doc (target, false, as_int (first), as_int (last));
-	cout<<"CMD:"<<get_printing_cmd ()<<":"<<target<<"\n";
-  //system (printing_cmd, target);  // Send the document to the printer
-
-
-	array<string> cmd;
-	cmd << string("cmd");
-	cmd  << string("/c");
-  cmd << '"' * get_printing_cmd () * '"';
-#ifdef OS_MINGW
-  cmd << string ("/P");
-#endif
-  cmd << concretize (target);
-  array<int> out; //out << 1; out << 2;
-  //cout << "cmd= " << cmd << LF;
-  array<string> ret= evaluate_system (cmd, array<int> (), array<string> (), out);
-  //cout << "ret= " << ret << LF;
-	/*
-  if (ret [0] != "0" || ret[2] != "") {
-    //convert_error << ret[1] << LF;
-    convert_error << "for file " << target << LF;
-    convert_error << ret[2] << LF;
-    return ;
-	}
-	*/
-
-
-	set_message ("Done printing", "print buffer");
+  system (get_printing_cmd(), target);  // Send the document to the printer
+  set_message ("Done printing", "print buffer");
   ::remove (target);
 }
 

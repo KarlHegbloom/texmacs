@@ -143,10 +143,9 @@ evaluate_system (array<string> arg,
 string 
 get_printing_default () {
 #if defined (OS_MINGW)
-  url embedded ("$TEXMACS_PATH/bin/SumatraPDF.exe");
-  if (exists (embedded))
-    return concretize (embedded) * " -print-dialog -exit-when-done";
-  else return "";
+	url embedded ("$TEXMACS_PATH/bin/SumatraPDF.exe");
+	if(exists (embedded)) return concretize (embedded) * " -print-dialog -exit-when-done";
+	else return "";
 #else
   return "lp";
 #endif
