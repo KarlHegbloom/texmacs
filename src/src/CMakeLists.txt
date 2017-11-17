@@ -585,7 +585,7 @@ SET(TeXmacs_Std_Plugins_SRCS
     )
 
 set(TeXmacs_MacOS_SRCS
-  ./Plugins/MacOS/cg_renderer.cpp
+  # ./Plugins/MacOS/cg_renderer.cpp
   ./Plugins/MacOS/HIDRemote.m
   #./Plugins/MacOS/mac_app.mm
   ./Plugins/MacOS/mac_images.mm
