@@ -175,7 +175,8 @@ int DEBUG = FALSE ;
 
 #else // def USE_DEBUG
 
-#define DEBUG_LOG( ... ) {if( DEBUG ) write(LOG, temp_buf, snprintf( temp_buf, 4096, __VA_ARGS__ ) );}
+#define DEBUG_LOG( ... ) {if( DEBUG ) DEBUGLOGRET = write(LOG, temp_buf, snprintf( temp_buf, 4096, __VA_ARGS__ ) );}
+int DEBUGLOGRET;
 int LOG ;
 int DEBUG = TRUE ;
 
@@ -207,7 +208,7 @@ void add_prompt( char *new_prompt ) {
       allocated_prompt_strings *= 2 ;
     }
   }
-  
+
   DEBUG_LOG("add_prompt all alloc\n") ;
 
   // allocate room for string
@@ -234,13 +235,13 @@ void add_prompt_flag( term_prompt_entry *new_flag ) {
       if( prompt_flag == NULL ) longjmp( error_return_env, ERROR_ALLOC ) ;
       allocated_prompt_flags = 100 ;
     } else {
-      prompt_flag = realloc( prompt_flag, 
+      prompt_flag = realloc( prompt_flag,
 			     2 * allocated_prompt_flags * (sizeof( term_prompt_entry ) ) ) ;
       if( prompt_flag == NULL ) longjmp( error_return_env, ERROR_ALLOC ) ;
       allocated_prompt_flags *= 2 ;
     }
   }
-  
+
   // copy it
   memcpy( prompt_flag + n_prompt_flag, new_flag, sizeof( term_prompt_entry ) ) ;
   //  prompt_flag[ n_prompt_flag ] = new_flag[0] ;
@@ -264,7 +265,7 @@ int conf_read_int_B( struct my_buffer *CONF, int *from, int *val)
       if( !data_since_nl ) return FALSE ;
       else( data_since_nl ) FALSE ;
     } else if( (CONF->buf[CONF->put - *from] != CARRIAGE_RETURN ) &&
-	       (CONF->buf[CONF->put - *from] != ' ' ) && 
+	       (CONF->buf[CONF->put - *from] != ' ' ) &&
 	       (CONF->buf[CONF->put - *from] != '\t' ) ) {
       data_since_nl = TRUE ;
 
@@ -276,7 +277,7 @@ int conf_read_int_B( struct my_buffer *CONF, int *from, int *val)
 	  return FALSE ;
 	}
       }
-      
+
       if( B_strcmp_put( CONF, *from, "0x" ) ) {
 	sprintf( tmp, "%%x%d%%n", *from ) ;
 	sscanf( tmp, val, &d ) ;
@@ -298,15 +299,15 @@ int conf_read_int_B( struct my_buffer *CONF, int *from, int *val)
 	return TRUE ;
       }
     }
-	
+
   }
 }
 
-    
+
 
 void read_config_numbers( char *fname, struct my_buffer *CONF, char *par, int **numbers, int *n_numbers )
 {
-  
+
   if( CONF==NULL )
     slurp_file_B( fname, CONF ) ;
 
@@ -328,7 +329,7 @@ void read_config_numbers( char *fname, struct my_buffer *CONF, char *par, int **
     }
 
     done = !conf_read_int_B( CONF, *numbers + cur_read ) ;
-  
+
   }
 }
 #endif
@@ -358,13 +359,13 @@ int check_terminal( int f )
 			(unsigned int) termi.c_oflag,
 			(unsigned int) termi.c_cflag,
 			(unsigned int) termi.c_lflag  ) ;
-  
+
   //  termi.c_lflag |= ECHO ;
   // tcsetattr( f, TCSASOFT, &termi ) ;
-  
-  
+
+
   // compare the terminal flags against those in prompt_flags.
-  for( p_i = 0; p_i < n_prompt_flag; p_i++) {  
+  for( p_i = 0; p_i < n_prompt_flag; p_i++) {
 
     if( (termi.c_iflag == prompt_flag[p_i][0]) &&
 	(termi.c_oflag == prompt_flag[p_i][1]) &&
@@ -372,7 +373,7 @@ int check_terminal( int f )
 	(termi.c_lflag == prompt_flag[p_i][3]) ) {
 		DEBUG_LOG( "p_i=%d \n",p_i) ;
       return TRUE ;
-    } 
+    }
   }
   return FALSE ;
 }
@@ -398,9 +399,10 @@ char last_prompt_candidate[1025] ;
 void signal_int(int x)
 {
   char st[4096];
+  int ret;
   DEBUG_LOG("got signal\n") ;
-  write(subprocess,"",1) ;
-  //write(subprocess,"\t\t",2) ;
+  ret = write(subprocess,"",1) ;
+  //ret = write(subprocess,"\t\t",2) ;
   //  kill(childpid,SIGINT) ;
 //  N_data_begins = 0 ;
 
@@ -446,11 +448,11 @@ struct my_buffer {
 int compare_end_B( struct my_buffer *b, char *string )
 {
   int n,ret;
-  
+
   n = strlen( string ) ;
   if( n > b->put - b->get )
     return (1==0) ;
-  
+
   ret = strncmp( b->buf+b->put-n, string,n ) ;
   return( ret==0 ) ;
 }
@@ -482,13 +484,13 @@ int check_prompt_strings_B( struct my_buffer *B )
     }
   if( !got_prompt ) store_last_prompt_candidate( B ) ;
   return got_prompt ;
-}  
+}
 
 void clear_B( struct my_buffer *B )
 {
   B->get = B->put = 0 ;
 }
- 
+
 
 void copy_to_B( struct my_buffer *b, char *data, size_t count )
 {
@@ -532,18 +534,18 @@ void ncopy_B_to_B( struct my_buffer *b, struct my_buffer *c, ssize_t count )
   memcpy(b->buf+b->put, c->buf + c->get,count) ;
   b->put += count ;
   c->get += count ;
-  if( c->put == c->get ) 
+  if( c->put == c->get )
     c->get = c->put = 0 ; /* reset buffer */
 }
 
-void delete_from_B( struct my_buffer *b, int i, int count ) 
+void delete_from_B( struct my_buffer *b, int i, int count )
 {
   if( i+count > b->put )  {
     count = b->put - i ;
-  } 
-  if( i >= b->put ) 
+  }
+  if( i >= b->put )
     return ;
-	
+
   memmove(b->buf+i, b->buf+i+count, b->put-(i+count) ) ;
   b->put -= count ;
 }
@@ -557,7 +559,7 @@ void rem_nl_B( struct my_buffer *b)
   for( i= b->get, j= b->get;  i < (b->put - 1); i++ ) {
     if( b->buf[i] == CARRIAGE_RETURN ) {
       if( b->buf[i+1] != NEW_LINE ) {
-	b->buf[j] = NEW_LINE ; 
+	b->buf[j] = NEW_LINE ;
 	j++ ;
       }
     } else {
@@ -566,7 +568,7 @@ void rem_nl_B( struct my_buffer *b)
     }
   }
   if( b->buf[i] == CARRIAGE_RETURN )
-    b->buf[j] = NEW_LINE ; 
+    b->buf[j] = NEW_LINE ;
   else
     b->buf[j] = b->buf[i] ;
   b->put = j+1 ;
@@ -624,13 +626,13 @@ int data_available_B( struct my_buffer *b)
 int write_B( int fd, struct my_buffer *b )
 {
   int nwrite =0;
-  
+
   if( b->put > b->get ) {
 //	DEBUG_LOG("changed Termflag: %x",termi)
-	
+
     nwrite = write( fd, b->buf+b->get, b->put - b->get ) ;
     b->get += nwrite ;
-    if( b->put == b->get ) 
+    if( b->put == b->get )
       b->get = b->put = 0 ; /* reset buffer */
   }
   return nwrite ;
@@ -638,9 +640,9 @@ int write_B( int fd, struct my_buffer *b )
 
 int write_B2( int fd, struct my_buffer *b )
 {
-  struct termios termi ;	
+  struct termios termi ;
   int nwrite =0;
-  
+
   if( b->put > b->get ) {
     /* we have data available */
     tcgetattr( fd, &termi ) ;
@@ -651,10 +653,10 @@ int write_B2( int fd, struct my_buffer *b )
     tcsetattr( fd,TCSADRAIN, &termi ) ;
 	tcgetattr( fd, &termi ) ;
 //	DEBUG_LOG("changed Termflag: %x",termi)
-	
+
     nwrite = write( fd, b->buf+b->get, b->put - b->get ) ;
     b->get += nwrite ;
-    if( b->put == b->get ) 
+    if( b->put == b->get )
       b->get = b->put = 0 ; /* reset buffer */
     tcgetattr( fd, &termi ) ;
 
@@ -673,10 +675,10 @@ int write_B2( int fd, struct my_buffer *b )
 int debug_B( struct my_buffer *b )
 {
   int nwrite =0;
-  
+
   if( b->put > b->get ) {
     /* we have data available */
-	
+
     nwrite = write( LOG, b->buf+b->get, b->put - b->get ) ;
   }
   return nwrite ;
@@ -716,7 +718,7 @@ int B_replace_inplace( struct my_buffer *B, int len, char *find, char *rep ) {
   int find_n = strlen( find ) ;
   int rep_n = strlen( rep ) ;
   int i,j ;
-  
+
   char *str = B->buf + B->put - len ;
   int d = find_n - rep_n ;
   int found = 0 ;
@@ -748,7 +750,7 @@ int B_find( struct  my_buffer *B, int from, char *find ) {
   int i ;
   int find_n = strlen( find ) ;
 
-  
+
   DEBUG_LOG("in find from=%d, find_n=%d\n", from, find_n ) ;
   for( i=0; i<from - find_n; i++ ) {
     DEBUG_LOG( "comparing ||%10s|| to ||%10s||\n", B->buf + B->put - from + i, find ) ;
@@ -757,13 +759,13 @@ int B_find( struct  my_buffer *B, int from, char *find ) {
       return i ;
     }
   }
-  
+
   return -1 ;
 }
 
 
 // This will reformat the input from TeXmacs form. @(complete to R form t.tab.comp(
-void prepare_tabcomplete_request( struct my_buffer *TO_R_B, int from ) 
+void prepare_tabcomplete_request( struct my_buffer *TO_R_B, int from )
 {
   int i ;
   int in_quote, escaped ;
@@ -771,25 +773,25 @@ void prepare_tabcomplete_request( struct my_buffer *TO_R_B, int from )
     i = strlen( COMMAND_TABCOMPLETE )+1 ;
     strncpy( TO_R_B->buf + TO_R_B->put- from, "t.tab.comp(", i ); // This hack assumes that the command is '@(complete'
     // And thus contains the same number of characters as "t.tab.comp"
-					
+
     in_quote = FALSE ; escaped = FALSE ;
     for( ; i < from-1; i++) { // find the first ' ' not in quotes, and replace it with ",".
       DEBUG_LOG("i=%d [%c]\n",i,TO_R_B->buf[ TO_R_B->put+(i)- from]) ;
       if( in_quote ) DEBUG_LOG("quote\n") ;
       if( ! in_quote ) {
-	if( TO_R_B->buf[ TO_R_B->put+(i)- from]==' ') {  
-	  DEBUG_LOG("found space\n"); 
-	  TO_R_B->buf[ TO_R_B->put+(i)- from] = ',' ;	
+	if( TO_R_B->buf[ TO_R_B->put+(i)- from]==' ') {
+	  DEBUG_LOG("found space\n");
+	  TO_R_B->buf[ TO_R_B->put+(i)- from] = ',' ;
 	  break ;
-	} 
+	}
 	if ( B_strcmp_put( TO_R_B, from-i, "\"\"" ) ) {
 	  printf("\2scheme:(tuple \"\" \"\")\5"); ///// TODO: this shouldn't be here! We shouldn't just print to TeXmacs.
 	  fflush(stdout);
 	  break;
 	}
-      } 
-					  
-      if( ( ! escaped ) && (TO_R_B->buf[ TO_R_B->put+(i)-from]=='"') ) 
+      }
+
+      if( ( ! escaped ) && (TO_R_B->buf[ TO_R_B->put+(i)-from]=='"') )
 	in_quote = ! in_quote ;
       if( ( ! escaped ) && (TO_R_B->buf[ TO_R_B->put+(i)-from]=='\\') ) {
 	escaped = TRUE ;
@@ -798,7 +800,7 @@ void prepare_tabcomplete_request( struct my_buffer *TO_R_B, int from )
       }
 
     }
-					
+
 }
 
 
@@ -809,59 +811,60 @@ void handle_command( struct my_buffer *B, int nread ) {
   if( *s == '(' ) {s++ ; nread-- ;}
 
   DEBUG_LOG("strcmp: %d\n",  strncmp( s, "prompt", nread ) ) ;
-  
+
   if( nread >= strlen("termstate") && strncmp(s, "termstate", nread )== 0 ) {
 
   } else if( nread >= strlen("prompt") && strncmp( s, "prompt", 6 )==0 ) {
     DEBUG_LOG("got promppt command\n") ;
-    
+
     add_prompt(last_prompt_candidate) ;
   } else if( nread >= strlen("clear_prompt") && strncmp( s, "clear_prompt", nread )==0 ) {
 
   } else if( nread >= strlen("session_name") && strncmp( s, "session_name", nread )==0 ) {
 
-  } 
+  }
 }
 
 
 int main(int argc, char *argv[])
 {
   char *name=NULL ;
-  
-  
-  struct my_buffer 
+
+
+  struct my_buffer
     *FROM_R_B ,
     *TXB,   /* buffer for interface with texmacs */
     *TO_R_B ;   /* buffer for interface with R */
-  
+
   ssize_t nread;
-  
-  
+
+
   int i,j ;
   int got_prompt,  error ;
   int in_quote, escaped ;
   int n_ignore_prompts=0 ;
+  int ret;
 
   int last_nl = 0, command_place ;
-  
-  
+
+
   char *TEXMACS_HOME_PATH, *TEXMACS_R, *TEXMACS_SEND_E, *TEXMACS_LIB, *HOME ;
   struct termios termi ;
   sigset_t sigmask, orig_sigmask;
-  
+
   struct stat stat_buf;
 
   name = getenv("TEXMACS_R_SESSION") ;
   if( argc > 1 ) name = argv[1] ;
-  
+
 #ifdef USE_DEBUG
   if( DEBUG ) {
     unlink("/tmp/log") ;
     LOG = open("/tmp/log",O_CREAT | O_RDWR,0755) ;
   }
 #endif
-  
-  
+
+
   HOME = getenv("HOME") ;
   if( HOME == NULL ) HOME = "~" ;
 
@@ -870,33 +873,33 @@ int main(int argc, char *argv[])
     TEXMACS_HOME_PATH = (char *)malloc( 4096 ) ;
     snprintf( TEXMACS_HOME_PATH, 4096, "%s/.TeXmacs",HOME) ;
   }
-  
+
   /* Lazy installing the TeXmacs package */
   TEXMACS_LIB = (char *)malloc(4096);
   snprintf(TEXMACS_LIB,4096,"%s/plugins/r/r",TEXMACS_HOME_PATH);
   if (stat(TEXMACS_LIB,&stat_buf))
-    system("r_install"); 
+      ret = system("r_install");
 
-setenv( "TERM", "dumb", 1) ;
-  
-  
+  setenv( "TERM", "dumb", 1) ;
+
+
   // Build the command tp execute
   TEXMACS_R = getenv("TEXMACS_CMD") ;
   if( TEXMACS_R == NULL ) {
-    TEXMACS_R = "R"; 
-    /* ignore 1 input request - i.e. do not generate a prompt channel in
-       texmacs for it */
-    n_ignore_prompts=0;
+      TEXMACS_R = "R";
+      /* ignore 1 input request - i.e. do not generate a prompt channel in
+	 texmacs for it */
+      n_ignore_prompts=0;
   } else {
-    n_ignore_prompts=0;
+      n_ignore_prompts=0;
   }
-  
+
   // Send commands to the process we just started. This is usually to load the TeXmacs library.
   TEXMACS_SEND_E = getenv("TEXMACS_SEND") ;
   if( TEXMACS_SEND_E == NULL ) TEXMACS_SEND_E = DEFAULT_TEXMACS_SEND ;
 DEBUG_LOG( "TEXMACS_SEND=%s",TEXMACS_SEND_E) ;
 
-  
+
 
   if( (childpid=forkpty( &subprocess, NULL, NULL, NULL ))==0 ) {
     /* I'm the child - I'll run the command */
@@ -904,14 +907,14 @@ DEBUG_LOG( "TEXMACS_SEND=%s",TEXMACS_SEND_E) ;
     int i,n,m;
     m = strlen( TEXMACS_R ) ;
     for( i=0,n=0; i<m; i++)
-      if( TEXMACS_R[i] == ' ' ) 
+      if( TEXMACS_R[i] == ' ' )
 	n++ ;
-	
+
 unsetenv( "DYLD_LIBRARY_PATH") ;
-	
+
     exec_argv = (char **) malloc( (n+2)*sizeof( char * ) ) ;
-	
-    /* split TEXMACS_R into arguments into exec_argv, 
+
+    /* split TEXMACS_R into arguments into exec_argv,
        at each " " that doesn't have a \ to escape it  */
     exec_argv[0] = TEXMACS_R ;
     for( i=0,n=0; i<m; i++)
@@ -924,7 +927,7 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
     execvp(TEXMACS_R,exec_argv) ;
   } else {
     /* I'm the parent - I'll handle input and output and watch the child.*/
-	
+
     /* This is for pselect. Supposedly if pselect doesn't kn ow what signals
        we are waiting for, it will get confused. */
 
@@ -952,10 +955,10 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
       copy_to_B( TXB, temp_buf, snprintf( temp_buf,  TEMP_BUF_SIZE, "error: out of memory error in tm_r\n" ) );
       END_VERBATIM( TXB ) ;
     }
-	
-		  
+
+
     // Send initial commands
-    copy_to_B( TO_R_B, temp_buf, snprintf( temp_buf, TEMP_BUF_SIZE, "%s",TEXMACS_SEND_E ) ) ;  
+    copy_to_B( TO_R_B, temp_buf, snprintf( temp_buf, TEMP_BUF_SIZE, "%s",TEXMACS_SEND_E ) ) ;
 
     DEBUG_LOG("setting mask\n") ;
     sigemptyset (&sigmask);
@@ -967,47 +970,47 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
     sigaddset (&sigmask, SIGSEGV);
     sigprocmask (SIG_BLOCK, &sigmask,
 		 &orig_sigmask);
-	
+
     signal (SIGINT, signal_int);
     signal (SIGCHLD, child_died);
     signal (SIGBUS, something_wrong ) ;
     signal (SIGABRT, something_wrong ) ;
     signal (SIGILL, something_wrong ) ;
     signal (SIGSEGV, something_wrong ) ;
-	
+
     fcntl(subprocess, F_SETFL, O_NONBLOCK) ;
-	
+
     /* send the initial string */
     write_B( subprocess, TO_R_B ) ;
-	
+
     /* get terminal settings */
     tcgetattr(subprocess, &termi ) ;
 
 //    termi.c_lflag &= ~ECHO  ; /* no echo */
 //	    termi.c_lflag &= ~CANON  ; /* no echo */
     tcsetattr(subprocess,TCSANOW, &termi ) ;
-	
-    
+
+
     while(not_done) { // main loop. Every iteration we wait for data or data send with pselect.
 
       /* prepare the file sets for pselect to watch */
       fd_set rd, wr, er;
- 	  
+
       FD_ZERO (&rd);
       FD_ZERO (&wr);
       FD_ZERO (&er);
 
       FD_SET (subprocess, &rd); // wait for sub-process to send data (i.e. data from R).
-	       
+
       FD_SET (STDIN_FILENO, &rd ) ; /* wait for data from TeXmacs */
-	  
+
       if( data_available_B( TXB ) ) /* if we have data to send to TeXmacs */
 	FD_SET (STDOUT_FILENO, &wr ) ; /* then also wait to send to TeXmacs */
 
       if( data_available_B( TO_R_B ) )  /* if we have data available to send to R,  */
 	FD_SET (subprocess, &wr);	    /*  then also wait to send to R. */
-	  
-	  
+
+
 
       // We will wait till something happens using pselect.
 
@@ -1015,7 +1018,7 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 	if( FD_ISSET( STDIN_FILENO, &er) ) exit(0) ;
 	if( FD_ISSET( STDOUT_FILENO, &er) ) exit(0) ;
 	if( FD_ISSET( subprocess, &er) ) exit(0) ;
-      
+
 	////////////////////////////////////////////
 	// input ready from TeXmacs
 	if( FD_ISSET( STDIN_FILENO, &rd ) ) {
@@ -1060,7 +1063,7 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 
 	//////////////////////////////////////////////////////////////////////
 	// start of read from R
-      
+
 	if( FD_ISSET( subprocess, &rd ) ) {
 	  /* =================== read input from sub process (R) */
 	  DEBUG_LOG("BBefore reading from R %d %d:||",FROM_R_B->put, FROM_R_B->get ) ;
@@ -1073,14 +1076,14 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 	  DEBUG_LOG("got from R:||" ) ;
 	  debug_B( FROM_R_B ) ;
 	  DEBUG_LOG("||\n" ) ;
-	  if( compare_end_B( FROM_R_B, "--More--" ) ) 
+	  if( compare_end_B( FROM_R_B, "--More--" ) )
 	    copy_to_B( TO_R_B, " ", 1 ) ;
-	  
+
 	  // Nefore we do anything, check for prompt. Don't want to spoil it.
 	  got_prompt = check_terminal( subprocess ) || check_prompt_strings_B( FROM_R_B ) ;
-		  
+
 	  if( got_prompt ) DEBUG_LOG( "This is a prompt\n") ;
-	  
+
 	  ///////
 	  // handle return from tabcomplete
 	  if (tab_comp_ptr) { // check if we got from R the complete completion.
@@ -1099,7 +1102,7 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 	    tab_comp_ptr = FALSE ;
 
 	  }  // end handle tabcomplete
-	
+
 	  //////////////////
 	  // If it isn't tabcomplete, give the data to TeXmacs.
 	  //
@@ -1125,8 +1128,8 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 	      */
 
 	      // First, find previous end of line
-	      for( i= FROM_R_B->put - FROM_R_B->get; i > 0; i--) 
-		if( (FROM_R_B->buf[i-1]==CARRIAGE_RETURN) || (FROM_R_B->buf[i-1]==NEW_LINE) ) 
+	      for( i= FROM_R_B->put - FROM_R_B->get; i > 0; i--)
+		if( (FROM_R_B->buf[i-1]==CARRIAGE_RETURN) || (FROM_R_B->buf[i-1]==NEW_LINE) )
 		  break ;
 
 	      if( i > 0 ) { // Found end-of-line
@@ -1135,8 +1138,8 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 		while( last_nl > 0 ) {  // put in buffer TXB last_nl NEW_LINEs
 		  copy_to_B( TXB, "\n", 1 ) ;
 		  last_nl-- ;
-		} 
-		ncopy_B_to_B( TXB, FROM_R_B, i ) ;		
+		}
+		ncopy_B_to_B( TXB, FROM_R_B, i ) ;
 		//		del_last_nl_B( TXB ) ;
 	      }
 
@@ -1154,14 +1157,14 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 		    sanitize_B( FROM_R_B ) ;
 		    copy_B_to_B( TXB, FROM_R_B ) ;
 		    printf_B( TXB, "\\black" ) ;
-		  } 
-		} 
-	      } 
+		  }
+		}
+	      }
 	      END_VERBATIM( TXB ) ; // close all parenthesis
 
 
-	    } 
-	  } 
+	    }
+	  }
 	}
 	// end of read from R
 	//////////////////////////////////////////////////////////////////////
@@ -1193,26 +1196,21 @@ unsetenv( "DYLD_LIBRARY_PATH") ;
 
     termi.c_lflag &= ~ECHO  ; /* no echo */
     tcsetattr(subprocess,TCSADRAIN, &termi ) ;
-	
-	    DEBUG_LOG("sending to R:||" ) ;
+
+    DEBUG_LOG("sending to R:||" ) ;
 	    debug_B( TO_R_B ) ;
 	    DEBUG_LOG("||\n" ) ;
 	    DEBUG_LOG("before: %d %d\n",TO_R_B->put, TO_R_B->get) ;
 	    write_B2( subprocess, TO_R_B ) ;
 	    DEBUG_LOG("after: %d %d\n",TO_R_B->put, TO_R_B->get) ;
-          
+
 	  }
 	}
-		
-		
+
+
       }
     }
-	
+
   } // I'm the parent
   exit(0) ;
 }
-
-
-
-
-
