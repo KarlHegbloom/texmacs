@@ -721,7 +721,7 @@ SET(TeXmacs_Qt_SRCS
     ./Plugins/Qt/QTMTreeModel.cpp
     ./Plugins/Qt/QTMWidget.cpp
     ./Plugins/Qt/QTMWindow.cpp
-    )
+)
 
   SET(TeXmacs_Qt_Moc_HDRS
     ./Plugins/Qt/QTMApplication.hpp
@@ -739,7 +739,7 @@ SET(TeXmacs_Qt_SRCS
     ./Plugins/Qt/QTMTreeModel.hpp
     ./Plugins/Qt/QTMWidget.hpp
     ./Plugins/Qt/QTMWindow.hpp
-    )
+)
 
 
   ### --------------------------------------------------------------------
