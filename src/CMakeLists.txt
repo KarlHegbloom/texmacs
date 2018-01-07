@@ -465,7 +465,8 @@ ENDIF(${CMAKE_SYSTEM_NAME} STREQUAL "CYGWIN_NT-5.1")
 ### Experimental options
 ### --------------------------------------------------------------------
 
-option(EXPERIMENTAL "Enable experimental Memorizer Environment Evaluate" ON)
+### Does not compile. Turn it off for now.
+option(EXPERIMENTAL "Enable experimental Memorizer Environment Evaluate" OFF)
 
 ### --------------------------------------------------------------------
 ###  Guile

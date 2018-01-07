@@ -20,24 +20,28 @@ CMAKE_OPTS :=					\
   -DCMAKE_INSTALL_RUNSTATEDIR=/run		\
   -DTRY_GUILE18_CONFIG_FIRST=ON			\
   -DGUILE_HEADER_18=OFF				\
-  -DTEXMACS_GUI=Qt5 \
-	-DDISABLE_FASTALLOC=ON
+  -DTEXMACS_GUI=Qt5				\
+  -DDISABLE_FASTALLOC=ON
 
 
 %: ${BUILD_DIR}/Makefile debian/changelog debian/control
 	dh $@ --parallel --buildsystem=cmake --builddirectory=${BUILD_DIR}
 
-${BUILD_DIR}:
-	mkdir -p $@
 
-${BUILD_DIR}/Makefile debian/changelog debian/control: ${BUILD_DIR}
+debian/BUILD_DIR-stamp:
+	mkdir -p ${BUILD_DIR}
+	touch $@
+
+${BUILD_DIR}/Makefile debian/changelog debian/control: debian/BUILD_DIR-stamp
 	(cd ${BUILD_DIR} && cmake ${CMAKE_OPTS} ..)
+	touch debian/changelog
+	touch debian/control
+	touch ${BUILD_DIR}/Makefile
 
-override_dh_update_autotools_config:
-	:
 
-override_dh_auto_configure: ${BUILD_DIR}/Makefile debian/changelog debian/control
-	:
+override_dh_update_autotools_config override_dh_autoreconf override_dh_autoreconf_clean override_dh_auto_configure override_dh_strip:
+  :
 
-override_dh_strip:
-	:
+override_dh_auto_clean:
+	rm -rf ${BUILD_DIR}
+	rm -f debian/BUILD_DIR-stamp
