@@ -32,10 +32,36 @@ set (TeXmacs_Include_Dirs
     ./Kernel/Containers
     ./Kernel/Types
     ./Plugins
+    ./Plugins/Axel
+    ./Plugins/Bibtex
+    ./Plugins/Cairo
+    ./Plugins/Cocoa
+    ./Plugins/Database
+    ./Plugins/Freetype
+    ./Plugins/Ghostscript
+    ./Plugins/Imlib2
+    ./Plugins/Ispell
+    ./Plugins/LaTeX_Preview
+    ./Plugins/MacOS
+    ./Plugins/Metafont
+    ./Plugins/Mplayer
+    ./Plugins/Openssl
+    ./Plugins/Pdf
     ./Plugins/Pdf/LibAesgm
+    ./Plugins/Pdf/PDFWriter
+    ./Plugins/Qt
+    ./Plugins/Sqlite3
+    ./Plugins/Unix
+    ./Plugins/Updater
+    ./Plugins/Widkit
+    ./Plugins/Windows
+    ./Plugins/X11
     ./Scheme
     ./Scheme/Guile
     ./Scheme/Scheme
+    ./Style/Environment
+    ./Style/Evaluate
+    ./Style/Memorizer
     ./System
     ./System/Boot
     ./System/Classes
@@ -49,8 +75,8 @@ set (TeXmacs_Include_Dirs
     ./Typeset/Bridge
     ./Typeset/Concat
     ./Typeset/Page
-    ${TEXMACS_SOURCE_DIR}/TeXmacs/include 
-    ${TEXMACS_BINARY_DIR}/src/System/ 
+    ${TEXMACS_SOURCE_DIR}/TeXmacs/include
+    ${TEXMACS_BINARY_DIR}/src/System/
 )
 
 set (CMAKE_CXX_FLAGS "-Wno-deprecated-register -include config.h")
@@ -554,14 +580,27 @@ SET(TeXmacs_Std_Plugins_SRCS
     ./Plugins/Sqlite3/sqlite3.cpp
     ./Plugins/Updater/tm_updater.cpp
     ./Plugins/Updater/tm_winsparkle.cpp
-)
+    )
+
+set(TeXmacs_MacOS_SRCS
+  # ./Plugins/MacOS/cg_renderer.cpp
+  ./Plugins/MacOS/HIDRemote.m
+  #./Plugins/MacOS/mac_app.mm
+  ./Plugins/MacOS/mac_images.mm
+  ./Plugins/MacOS/mac_spellservice.mm
+  ./Plugins/MacOS/mac_utilities.mm
+  )
+
+if(APPLE)
+  set(TeXmacs_Std_Plugins_SRCS ${TeXmacs_Std_Plugins_SRCS} ${TeXmacs_MacOS_SRCS})
+endif(APPLE)
 
 ### --------------------------------------------------------------------
 ### the experimental style extension
 ### --------------------------------------------------------------------
 
 
-SET(TeXmacs_Style_SRC
+SET(TeXmacs_Style_SRCS
     ./Style/Environment/assoc_environment.cpp
     ./Style/Environment/basic_environment.cpp
     ./Style/Environment/list_environment.cpp
@@ -742,34 +781,44 @@ endif (APPLE AND USE_SPARKLE)
 ### Set variables related to the executable target
 ### --------------------------------------------------------------------
 
-
-
 ## setup base source list, library dependencies, include dirs
 
 set (TeXmacs_All_SRCS ${TeXmacs_Base_SRCS} ${TeXmacs_Std_Plugins_SRCS})
 
-set (TeXmacs_Libraries
-    ${Guile_LIBRARIES}
-    ${ZLIB_LIBRARIES}
-    ${JPEG_LIBRARIES}
-    ${PNG_LIBRARIES}
-    -lpthread)
+if(EXPERIMENTAL)
+  set(TeXmacs_All_SRCS ${TeXmacs_All_SRCS} ${TeXmacs_Style_SRCS})
+endif(EXPERIMENTAL)
 
-if (LINKED_CAIRO)
-  set (TeXmacs_Libraries ${TeXmacs_Libraries} ${CAIRO_LIBRARIES})
-endif (LINKED_CAIRO)
+SET(TeXmacs_Libraries -lpthread
+  ${Guile_LIBRARIES}
+  ${JPEG_LIBRARIES}
+  ${ZLIB_LIBRARIES}
+  ${CONFIG_BDL}
+  ${PNG_LIBRARIES})
 
-if (LINKED_SQLITE3)
-  set (TeXmacs_Libraries ${TeXmacs_Libraries} ${SQLITE3_LIBRARIES})
-endif (LINKED_SQLITE3)
-
+#
+# TODO: I am not sure if dlopen of these is really supported. Is it?
+#
 if (LINKED_FREETYPE)
-  set (TeXmacs_Libraries ${TeXmacs_Libraries} ${FREETYPE_LIBRARIES})
+      set(TeXmacs_Libraries ${TeXmacs_Libraries} ${FREETYPE_LIBRARIES})
 endif (LINKED_FREETYPE)
 
-set (TeXmacs_Include_Dirs ${TeXmacs_Include_Dirs}
-  ${Guile_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS}
-  ${IMLIB2_INCLUDE_DIR}
+if (LINKED_CAIRO)
+  set(TeXmacs_Libraries ${TeXmacs_Libraries} ${Cairo_LIBRARIES})
+endif (LINKED_CAIRO)
+
+if (LINKED_IMLIB2)
+  set(TeXmacs_Libraries ${TeXmacs_Libraries} ${Imlib2_LDFLAGS})
+endif (LINKED_IMLIB2)
+
+if (LINKED_SQLITE3)
+  SET(TeXmacs_Libraries ${TeXmacs_Libraries} ${SQLITE3_LIBRARIES})
+endif (LINKED_SQLITE3)
+
+SET(TeXmacs_Include_Dirs ${TeXmacs_Include_Dirs}
+  ${Guile_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS}
+  ${Cairo_INCLUDE_DIRS} ${Imlib2_INCLUDE_DIRS} ${JPEG_INCLUDE_DIRS}
+  ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS}
 )
 
 
@@ -778,15 +827,23 @@ set (TeXmacs_Include_Dirs ${TeXmacs_Include_Dirs}
 ### --------------------------------------------------------------------
 
 
-IF(TEXMACS_GUI STREQUAL "Qt")
+if(TEXMACS_GUI STREQUAL "Qt5")
 
-  ADD_DEFINITIONS(${QT_DEFINITIONS})
-  IF(CMAKE_BUILD_TYPE STREQUAL "Release")
-    ADD_DEFINITIONS(-DQT_NO_DEBUG)
-  ENDIF(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_definitions(${Qt5Core_DEFINITIONS} ${Qt5Gui_DEFINITIONS} ${Qt5PrintSupport_DEFINITIONS})
 
   # After this call, TeXmacs_Qt_Moc_SRCS = moc_QTMWidget.cpp ...
   QT5_WRAP_CPP(TeXmacs_Qt_Moc_SRCS ${TeXmacs_Qt_Moc_HDRS})
+
+  set(TeXmacs_All_SRCS ${TeXmacs_All_SRCS} ${TeXmacs_Qt_SRCS} ${TeXmacs_Qt_Moc_SRCS})
+  set(TeXmacs_Libraries ${TeXmacs_Libraries}  ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
+  set(TeXmacs_Include_Dirs ${TeXmacs_Include_Dirs} ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5PrintSupport_INCLUDE_DIRS})
+
+elseif(TEXMACS_GUI STREQUAL "Qt")
+
+  add_definitions(${QT_DEFINITIONS})
+
+  # After this call, TeXmacs_Qt_Moc_SRCS = moc_QTMWidget.cpp ...
+  QT4_WRAP_CPP(TeXmacs_Qt_Moc_SRCS ${TeXmacs_Qt_Moc_HDRS})
 
   SET(TeXmacs_All_SRCS ${TeXmacs_All_SRCS} ${TeXmacs_Qt_SRCS} ${TeXmacs_Qt_Moc_SRCS})
   SET(TeXmacs_Libraries ${TeXmacs_Libraries}  ${QT_LIBRARIES})
@@ -799,42 +856,48 @@ ELSEIF(TEXMACS_GUI STREQUAL "Aqua")
   SET(TeXmacs_All_SRCS ${TeXmacs_All_SRCS} ${TeXmacs_Cocoa_SRCS})
   SET(TeXmacs_Libraries ${TeXmacs_Libraries} ${COCOA_LIBRARY})
   SET(TeXmacs_Include_Dirs ${TeXmacs_Include_Dirs} ${COCOA_INCLUDE_DIR})
-  
+
   MARK_AS_ADVANCED(COCOA_LIBRARY)
   MARK_AS_ADVANCED(COCOA_INCLUDE_DIR)
 
-ELSE(TEXMACS_GUI STREQUAL "Qt")
+ELSE(TEXMACS_GUI STREQUAL "Qt5")
 
   SET(TeXmacs_All_SRCS ${TeXmacs_All_SRCS} ${TeXmacs_Widkit_SRCS} ${TeXmacs_X11_SRCS})
   SET(TeXmacs_Libraries ${TeXmacs_Libraries} ${X11_LIBRARIES})
 
-ENDIF(TEXMACS_GUI STREQUAL "Qt")
+ENDIF(TEXMACS_GUI STREQUAL "Qt5")
+
 
 if (APPLE)
     set (TeXmacs_All_SRCS ${TeXmacs_All_SRCS} ${TeXmacs_MacOS_SRCS})
-    set (TeXmacs_Libraries ${TeXmacs_Libraries} "-framework Carbon -framework Foundation -framework IOKit -framework Cocoa -framework AppKit -framework CoreData")
-endif (APPLE)
+    #    set (TeXmacs_Libraries ${TeXmacs_Libraries} "-framework Carbon -framework Foundation -framework IOKit -framework Cocoa -framework AppKit -framework CoreData")
+    set (TeXmacs_Libraries ${TeXmacs_Libraries}
+      "-framework Cocoa -framework Carbon -framework IOKit -framework ApplicationServices")
+  endif (APPLE)
+
+  list(REMOVE_DUPLICATES TeXmacs_Libraries)
+  list(REMOVE_DUPLICATES TeXmacs_Include_Dirs)
 
 
-### --------------------------------------------------------------------
-### initialize executable target with all the infos collected so far
-### --------------------------------------------------------------------
+  ### --------------------------------------------------------------------
+  ### initialize executable target with all the infos collected so far
+  ### --------------------------------------------------------------------
 
-INCLUDE_DIRECTORIES(${TeXmacs_Include_Dirs}) 
+  INCLUDE_DIRECTORIES(${TeXmacs_Include_Dirs})
 
-add_executable ( ${TeXmacs_binary_name} ${GUI_TYPE}
-  ${TeXmacs_All_SRCS}
-)
+  add_executable ( ${TeXmacs_binary_name} ${GUI_TYPE}
+    ${TeXmacs_All_SRCS}
+    )
 
-target_link_libraries (${TeXmacs_binary_name} ${TeXmacs_Libraries})
+  target_link_libraries (${TeXmacs_binary_name} ${TeXmacs_Libraries})
 
-#--------------------------------------------------------------------------------
-#-- Set the Debug and Release names for the libraries
-SET_TARGET_PROPERTIES(${TeXmacs_binary_name} 
+  #--------------------------------------------------------------------------------
+  #-- Set the Debug and Release names for the libraries
+  SET_TARGET_PROPERTIES(${TeXmacs_binary_name}
     PROPERTIES
     DEBUG_OUTPUT_NAME ${TeXmacs_binary_name}${EXE_DEBUG_EXTENSION}
     RELEASE_OUTPUT_NAME ${TeXmacs_binary_name}
     RUNTIME_OUTPUT_DIRECTORY ${TEXMACS_BINARY_DIR}
-)
+    )
 
-install(TARGETS ${TeXmacs_binary_name} DESTINATION lib/texmacs/TeXmacs/bin)
+  install(TARGETS ${TeXmacs_binary_name} DESTINATION lib/texmacs/TeXmacs/bin)

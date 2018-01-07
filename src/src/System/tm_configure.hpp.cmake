@@ -1,7 +1,7 @@
 
 /******************************************************************************
-* MODULE     : tm_configure.gen.in or tm_configure.gen.h
-* DESCRIPTION: Defines system dependent macros (using autoconf)
+* MODULE     : tm_configure.hpp.cmake
+* DESCRIPTION: Defines system dependent macros (using cmake)
 * COPYRIGHT  : (C) 1999  Joris van der Hoeven
 *******************************************************************************
 * This software falls under the GNU general public license version 3 or later.
@@ -11,22 +11,30 @@
 
 #ifndef TM_CONFIGURE_H
 #define TM_CONFIGURE_H
-#include "config.h"
+
+// #include "config.h"
 
 @CONFIG_STD_SETENV@
 
 #define TEXMACS_VERSION "@DEVEL_VERSION@"
 #define TEXMACS_SOURCES "@tmorig@"
-#define OS_@CONFIG_OS@
-#define GUILE_@CONFIG_GUILE_SERIAL@
+
+#define BUILD_USER "@CONFIG_USER@"
+#define BUILD_DATE "@CONFIG_DATE@"
+
+#define TM_DEVEL "@tm_devel@"
+#define TM_STABLE "@tm_stable@"
+#define TM_DEVEL_RELEASE "@tm_devel_release@"
+#define TM_STABLE_RELEASE "@tm_stable_release@"
+
+// #define OS_@CONFIG_OS@
+#define HOST_OS "@CONFIG_HOST_OS@"
+#define HOST_VENDOR "@CONFIG_HOST_VENDOR@"
+#define HOST_CPU "@CONFIG_HOST_CPU@"
+
 #define WORD_LENGTH @CONFIG_WORD_LENGTH@
 #define WORD_LENGTH_INC @CONFIG_WORD_LENGTH_INC@
 #define WORD_MASK @CONFIG_WORD_MASK@
 #define MAX_FAST @CONFIG_MAX_FAST@
-
-#define TM_DEVEL "@tm_devel@"
-#define TM_DEVEL_RELEASE "@tm_devel_release@"
-#define TM_STABLE "@tm_stable@"
-#define TM_STABLE_RELEASE "@tm_stable_release@"
 
 #endif // defined TM_CONFIGURE_H
