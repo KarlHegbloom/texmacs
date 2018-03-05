@@ -155,6 +155,8 @@
   (bigintwl "\\int")
   (bigointwl "\\oint")
   (of ":")
+  (suchthat ":")
+  (barsuchthat "|")
   (point ".")
   (cdummy "\\cdot")
   (comma "{,}")

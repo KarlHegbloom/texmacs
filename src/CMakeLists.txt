@@ -588,10 +588,10 @@ endif(TEXMACS_GUI STREQUAL "Qt")
 
 if(TEXMACS_GUI STREQUAL "Qt5")
 
-  find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui PrintSupport REQUIRED)
+  find_package(Qt5 ${TM_QT5_MIN_VERSION} COMPONENTS Core Gui Widgets PrintSupport REQUIRED)
 
   if(Qt5_FOUND)
-    set(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
+    set(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
 
     if(WIN32)
       set(GUI_TYPE WIN32)

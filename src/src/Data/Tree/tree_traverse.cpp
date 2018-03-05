@@ -231,7 +231,7 @@ path previous_any (tree t, path p) {
 
 static path
 move_valid_sub (tree t, path p, bool forward) {
-  ASSERT (is_inside (t, p), "invalid cursor");
+  ASSERT (is_inside (t, p), "invalid cursor [move_valid]");
   path q= p;
   while (true) {
     path r= move_any (t, q, forward);
@@ -258,7 +258,7 @@ path previous_valid (tree t, path p) {
 
 static path
 move_accessible (tree t, path p, bool forward) {
-  ASSERT (is_inside (t, p), "invalid cursor");
+  ASSERT (is_inside (t, p), "invalid cursor [move_accessible]");
   path q= p;
   while (true) {
     path r= move_any (t, q, forward);

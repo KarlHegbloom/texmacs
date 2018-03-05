@@ -39,7 +39,7 @@ DESTDIR =
 
 MKDIR = mkdir -p
 RM = rm -f
-CP = cp -r -f
+CP = @CONFIG_CP@
 MV = mv -f
 LN = ln -f
 CHMOD = @CONFIG_CHMOD@
@@ -55,7 +55,7 @@ SIGN = misc/admin/sign_update
 # Main makes
 ###############################################################################
 
-TEXMACS: EMPTY_DIRS 
+TEXMACS: EMPTY_DIRS
 	cd src; $(MAKE) -r -f makefile link=shared
 	$(MAKE) -f Makefile PLUGINS
 	$(MAKE) -f Makefile EX_PLUGINS
@@ -65,11 +65,11 @@ TEXMACS: EMPTY_DIRS
 	$(CHMOD) 755 $(tmdir)/bin/*
 	$(CHMOD) 755 plugins/*/bin/*
 	$(RM) -r $(tmdir)/plugins
-	$(CP) plugins $(tmdir)/plugins
+	$(CP) plugins $(tmdir)/
 	@echo ----------------------------------------------------
 	@echo dynamic TeXmacs has been successfully compiled
 
-STATIC_TEXMACS: EMPTY_DIRS 
+STATIC_TEXMACS: EMPTY_DIRS
 	cd src; $(MAKE) -r -f makefile link=static CFLAGS=-D__TMSTATIC__
 	$(MAKE) -f Makefile PLUGINS
 	$(MAKE) -f Makefile EX_PLUGINS
@@ -196,7 +196,7 @@ INSTALL:
 	$(MKDIR) $(DESTDIR)$(datadir)/icons/gnome/scalable
 	$(MKDIR) $(DESTDIR)$(datadir)/icons/gnome/scalable/apps
 	$(CP) $(tmdir)/misc/images/TeXmacs.svg \
-	$(DESTDIR)$(datadir)/icons/gnome/scalable/apps 
+	$(DESTDIR)$(datadir)/icons/gnome/scalable/apps
 	$(MKDIR) $(DESTDIR)$(datadir)/icons/gnome/scalable/mimetypes
 	$(CP) $(tmdir)/misc/images/text-texmacs.svg \
 	$(DESTDIR)$(datadir)/icons/gnome/scalable/mimetypes
@@ -267,7 +267,7 @@ COPY_SOURCES:
 	$(RM) -r ../distr/build
 	$(MKDIR) ../distr/build
 	$(MKDIR) $(BUILD_DIR)
-	$(CP) -p * $(BUILD_DIR)/.
+	$(CP) * $(BUILD_DIR)/.
 	cd $(BUILD_DIR); make ACCESS_FLAGS
 	cd $(BUILD_DIR); make DISTR_CLEAN
 
@@ -395,9 +395,9 @@ DEBIAN_PACKAGE_SRC = packages/debian
 DEBIAN_PACKAGE_DIR = ../distr/debian
 
 DEBIAN_PACKAGE: COPY_SOURCES_TGZ
-	$(CP) -p $(BUILD_TGZ) ../distr/build/$(tm_debian_name_devel).orig.tar.gz
+	$(CP) $(BUILD_TGZ) ../distr/build/$(tm_debian_name_devel).orig.tar.gz
 	$(MKDIR) $(BUILD_DIR)/debian ;
-	$(CP) -p $(DEBIAN_PACKAGE_SRC)/* $(BUILD_DIR)/debian
+	$(CP) $(DEBIAN_PACKAGE_SRC)/* $(BUILD_DIR)/debian
 	cd $(BUILD_DIR) && dh_shlibdeps;debuild -us -uc
 	cd $(CURDIR)
 	$(MKDIR) $(DEBIAN_PACKAGE_DIR)
@@ -479,7 +479,7 @@ UBUNTU_PACKAGE: COPY_SOURCES_TGZ
 	$(MKDIR) $(BUILD_DIR)/debian ;
 	$(CP) $(UBUNTU_PACKAGE_SRC)/* $(BUILD_DIR)/debian
 	cd $(BUILD_DIR); debuild -us -uc
-	$(CP) -p ../distr/build/*.deb $(UBUNTU_PACKAGE_DIR)
+	$(CP) ../distr/build/*.deb $(UBUNTU_PACKAGE_DIR)
 	$(RM) -r ../distr/build
 
 .PHONY: UBUNTU_PACKAGE
@@ -663,7 +663,7 @@ SVN_CLEAN:
 	$(RM) -r */*/*/*/.svn
 	$(RM) -r */*/*/*/*/.svn
 	$(RM) -r */*/*/*/*/*/.svn
-	$(RM) -r */*/*/*/*/*/*/.svn	
+	$(RM) -r */*/*/*/*/*/*/.svn
 	$(RM) -r */*/*/*/*/*/*/*/.svn
 
 DISTR_CLEAN: DISTCLEAN SVN_CLEAN
