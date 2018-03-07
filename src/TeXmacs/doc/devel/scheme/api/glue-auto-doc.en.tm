@@ -3011,6 +3011,22 @@ source code.
   </explain>
 
   <\explain>
+    <scm|(string-differences <scm-arg|string> <scm-arg|string>)>
+<explain-synopsis|no synopsis>
+  <|explain>
+    Calls the <c++> function <cpp|differences> which returns
+    <scm|array_int>.
+  </explain>
+
+  <\explain>
+    <scm|(string-distance <scm-arg|string> <scm-arg|string>)>
+<explain-synopsis|no synopsis>
+  <|explain>
+    Calls the <c++> function <cpp|distance> which returns
+    <scm|int>.
+  </explain>
+
+  <\explain>
     <scm|(find-left-bracket <scm-arg|path> <scm-arg|string> <scm-arg|string>)>
 <explain-synopsis|no synopsis>
   <|explain>
@@ -7831,6 +7847,14 @@ source code.
 <explain-synopsis|no synopsis>
   <|explain>
     Calls the <c++> function <cpp|invalidate_all> which returns
+    <scm|void>.
+  </explain>
+
+  <\explain>
+    <scm|(update-forced)>
+<explain-synopsis|no synopsis>
+  <|explain>
+    Calls the <c++> function <cpp|typeset_forced> which returns
     <scm|void>.
   </explain>
 
