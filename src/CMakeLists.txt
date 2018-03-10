@@ -124,44 +124,44 @@ endif(NOT "${GITDIR}" STREQUAL "")
 
 
 ### Can svn work via an indirect repo directory like git can?
-if(IS_DIRECTORY "${TEXMACS_SOURCE_DIR}/.svn")
-  message(STATUS "-- This is a svn checkout.")
-  execute_process(COMMAND svnversion -n .
-    WORKING_DIRECTORY "${TEXMACS_SOURCE_DIR}"
-    OUTPUT_VARIABLE SVNREV ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+# if(IS_DIRECTORY "${TEXMACS_SOURCE_DIR}/.svn")
+#   message(STATUS "-- This is a svn checkout.")
+#   execute_process(COMMAND svnversion -n .
+#     WORKING_DIRECTORY "${TEXMACS_SOURCE_DIR}"
+#     OUTPUT_VARIABLE SVNREV ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-elseif(NOT "${GITDIR}" STREQUAL "" AND IS_DIRECTORY "${GITDIR}/svn")
-  message(STATUS "-- This is a git svn clone.")
-  ## Do not use `git svn info` for this because it provides incorrect results.
-  ## Instead, parse the `git rev-list` for the information that git svn writes
-  ## into the commit log during `git svn rebase` on the svn-trunk branch,
-  ## which is then merged into the present branch.
-  ## Requires sed.
-  execute_process(COMMAND git rev-list --max-count=100 --pretty=medium HEAD@{0}
-    COMMAND sed -rne "/git-svn-id:/ {s,.*://.*@([^ ]+).*,\\1,p ;/./ q 0}"
-    WORKING_DIRECTORY "${TEXMACS_SOURCE_DIR}"
-    OUTPUT_VARIABLE SVNREV ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif(IS_DIRECTORY "${TEXMACS_SOURCE_DIR}/.svn")
+# elseif(NOT "${GITDIR}" STREQUAL "" AND IS_DIRECTORY "${GITDIR}/svn")
+#   message(STATUS "-- This is a git svn clone.")
+#   ## Do not use `git svn info` for this because it provides incorrect results.
+#   ## Instead, parse the `git rev-list` for the information that git svn writes
+#   ## into the commit log during `git svn rebase` on the svn-trunk branch,
+#   ## which is then merged into the present branch.
+#   ## Requires sed.
+#   execute_process(COMMAND git rev-list --max-count=100 --pretty=medium HEAD@{0}
+#     COMMAND sed -rne "/git-svn-id:/ {s,.*://.*@([^ ]+).*,\\1,p ;/./ q 0}"
+#     WORKING_DIRECTORY "${TEXMACS_SOURCE_DIR}"
+#     OUTPUT_VARIABLE SVNREV ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+# endif(IS_DIRECTORY "${TEXMACS_SOURCE_DIR}/.svn")
 
-if("${SVNREV}" STREQUAL "" OR
-    "${SVNREV}" STREQUAL "exported" OR
-    "${SVNREV}" STREQUAL "Unversioned directory")
-  ## The above failed, or this is an exported source distribution.
-  if(EXISTS "${TEXMACS_SOURCE_DIR}/SVNREV")
-    message(STATUS "-- Setting SVNREV from ${TEXMACS_SOURCE_DIR}/SVNREV")
-    set(SVNREV "")
-    file(READ "${TEXMACS_SOURCE_DIR}/SVNREV" SVNREV)
-    string(STRIP "${SVNREV}" SVNREV)
-  endif(EXISTS "${TEXMACS_SOURCE_DIR}/SVNREV")
-endif("${SVNREV}" STREQUAL "" OR
-  "${SVNREV}" STREQUAL "exported" OR
-  "${SVNREV}" STREQUAL "Unversioned directory")
+# if("${SVNREV}" STREQUAL "" OR
+#     "${SVNREV}" STREQUAL "exported" OR
+#     "${SVNREV}" STREQUAL "Unversioned directory")
+#   ## The above failed, or this is an exported source distribution.
+#   if(EXISTS "${TEXMACS_SOURCE_DIR}/SVNREV")
+#     message(STATUS "-- Setting SVNREV from ${TEXMACS_SOURCE_DIR}/SVNREV")
+#     set(SVNREV "")
+#     file(READ "${TEXMACS_SOURCE_DIR}/SVNREV" SVNREV)
+#     string(STRIP "${SVNREV}" SVNREV)
+#   endif(EXISTS "${TEXMACS_SOURCE_DIR}/SVNREV")
+# endif("${SVNREV}" STREQUAL "" OR
+#   "${SVNREV}" STREQUAL "exported" OR
+#   "${SVNREV}" STREQUAL "Unversioned directory")
 
-if(NOT "${SVNREV}" STREQUAL "")
-  file(WRITE "${TEXMACS_SOURCE_DIR}/SVNREV" "${SVNREV}")
-  message(STATUS "-- SVNREV               : ${SVNREV}")
-  string(APPEND PKGREV "-svn-${SVNREV}")
-endif(NOT "${SVNREV}" STREQUAL "")
+# if(NOT "${SVNREV}" STREQUAL "")
+#   file(WRITE "${TEXMACS_SOURCE_DIR}/SVNREV" "${SVNREV}")
+#   message(STATUS "-- SVNREV               : ${SVNREV}")
+#   string(APPEND PKGREV "-svn-${SVNREV}")
+# endif(NOT "${SVNREV}" STREQUAL "")
 
 if(NOT "${GITDIR}" STREQUAL "" AND EXISTS "${GITDIR}")
   message(STATUS "-- Getting git commit count and head treeish for PKGREV...")
