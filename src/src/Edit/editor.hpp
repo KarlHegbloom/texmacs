@@ -2,7 +2,7 @@
 /******************************************************************************
 * MODULE     : editor.hpp
 * DESCRIPTION: abstract TeXmacs editors
-* COPYRIGHT  : (C) 1999  Joris van der Hoeven
+* COPYRIGHT  : (C) 1999-2018  Joris van der Hoeven
 *******************************************************************************
 * This software falls under the GNU general public license version 3 or later.
 * It comes WITHOUT ANY WARRANTY WHATSOEVER. For details, see the file LICENSE
@@ -29,7 +29,7 @@
 #  include "../Style/Memorizer/memorizer.hpp"
 #endif
 #include "new_data.hpp"
-#define TEXMACS_COPYRIGHT (string("(c) 1999-2013 by Joris van der Hoeven and others"))
+#define TEXMACS_COPYRIGHT (string("(c) 1999-2018 by Joris van der Hoeven and others"))
 
 #define THE_CURSOR 1
 #define THE_FOCUS 2
