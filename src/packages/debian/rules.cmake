@@ -24,7 +24,7 @@ CMAKE_OPTS :=					\
   -DDISABLE_FASTALLOC=ON
 
 
-%: ${BUILD_DIR}/Makefile debian/changelog debian/control
+%: debian/BUILD_DIR-stamp ${BUILD_DIR}/Makefile debian/changelog debian/control
 	dh $@ --parallel --buildsystem=cmake --builddirectory=${BUILD_DIR}
 
 
