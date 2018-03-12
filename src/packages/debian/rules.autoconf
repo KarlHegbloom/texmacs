@@ -15,6 +15,10 @@ export DH_VERBOSE=1
 
 export DH_ALWAYS_EXCLUDE=.git
 
+export CC=gcc
+export CPP=cpp
+export CXX=g++
+
 DEB_CONFIGURE_OPTIONS := \
 	'--enable-optimize=-O3 -ggdb -fexpensive-optimizations -fPIC' \
         '--disable-fastalloc'
