@@ -78,8 +78,12 @@ struct font_rep: rep<font> {
   font     zoomed_fn;        // zoomed font for last_zoom (or nil)
 
   // Microtypography
+  SI   global_lsub_correct;  // global left subscript correction
+  SI   global_lsup_correct;  // global left superscript correction
   SI   global_rsub_correct;  // global right subscript correction
   SI   global_rsup_correct;  // global right superscript correction
+  hashmap<string,double> lsub_correct;     // left subscript adjustments
+  hashmap<string,double> lsup_correct;     // left superscript adjustments
   hashmap<string,double> rsub_correct;     // right subscript adjustments
   hashmap<string,double> rsup_correct;     // right superscript adjustments
   hashmap<string,double> above_correct;    // wide accent above adjustments
@@ -190,6 +194,8 @@ int  script (int sz, int level);
 // Microtypography
 void adjust_char (hashmap<string,double>& t, string c, double delta);
 void adjust_pair (hashmap<string,double>& t, string c, double delta);
+void lsub_adjust_std (hashmap<string,double>& t);
+void lsup_adjust_std (hashmap<string,double>& t);
 void rsub_adjust_std (hashmap<string,double>& t);
 void rsup_adjust_std (hashmap<string,double>& t);
 void above_adjust_std (hashmap<string,double>& t);
