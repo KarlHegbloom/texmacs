@@ -16,6 +16,56 @@
 ******************************************************************************/
 
 void
+lsub_adjust_stix (hashmap<string,double>& t) {
+  adjust_pair (t, "p", 0.03);
+  adjust_pair (t, "U", 0.03);
+  adjust_pair (t, "<chi>", 0.05);
+  adjust_pair (t, "<Upsilon>", 0.03);
+  adjust_pair (t, "<Phi>", -0.03);
+  adjust_pair (t, "<bbb-T>", 0.05);
+  adjust_pair (t, "<bbb-Y>", 0.05);
+  adjust_pair (t, "<vee>", -0.05);
+  adjust_pair (t, "<curlyvee>", -0.05);
+}
+
+void
+lsup_adjust_stix (hashmap<string,double>& t) {
+  adjust_pair (t, "b", 0.02);
+  adjust_pair (t, "B", 0.02);
+  adjust_pair (t, "D", 0.02);
+  adjust_pair (t, "E", 0.02);
+  adjust_pair (t, "F", 0.02);
+  adjust_pair (t, "H", 0.02);
+  adjust_pair (t, "I", 0.02);
+  adjust_pair (t, "J", 0.02);
+  adjust_pair (t, "K", 0.02);
+  adjust_pair (t, "L", 0.02);
+  adjust_pair (t, "M", 0.02);
+  adjust_pair (t, "N", 0.02);
+  adjust_pair (t, "P", 0.02);
+  adjust_pair (t, "R", 0.02);
+  adjust_pair (t, "S", 0.02);
+  adjust_pair (t, "U", 0.02);
+  adjust_pair (t, "V", 0.02);
+  adjust_pair (t, "W", 0.02);
+  adjust_pair (t, "<beta>", 0.02);
+  adjust_pair (t, "<rho>", 0.02);
+  adjust_pair (t, "<chi>", 0.1);
+  adjust_pair (t, "<omega>", 0.02);
+  adjust_pair (t, "<Alpha>", 0.02);
+  adjust_pair (t, "<Delta>", 0.02);
+  adjust_pair (t, "<Lambda>", 0.02);
+  adjust_pair (t, "<cal-A>", 0.02);
+  adjust_pair (t, "<cal-I>", 0.08);
+  adjust_pair (t, "<cal-J>", 0.1);
+  adjust_pair (t, "<cal-M>", 0.1);
+  adjust_pair (t, "<cal-N>", 0.1);
+  adjust_pair (t, "<cal-S>", 0.03);
+  adjust_pair (t, "<cal-X>", 0.02);
+  adjust_pair (t, "<bbb-A>", 0.05);
+}
+
+void
 rsub_adjust_stix (hashmap<string,double>& t) {
   adjust_pair (t, "!", 0.05);
   adjust_pair (t, "/", -0.02);
@@ -103,6 +153,7 @@ rsub_adjust_stix (hashmap<string,double>& t) {
   adjust_pair (t, "<bbb-W>", 0.07);
   adjust_pair (t, "<bbb-Y>", 0.05);
   adjust_pair (t, "<bbb-Z>", -0.03);
+  adjust_pair (t, "<partial>", -0.03);
 }
   
 void
@@ -170,6 +221,7 @@ rsup_adjust_stix (hashmap<string,double>& t) {
   adjust_pair (t, "<frak-r>", 0.01);
   adjust_pair (t, "<frak-t>", 0.01);
   adjust_pair (t, "<frak-u>", -0.01);
+  adjust_pair (t, "<partial>", 0.02);
 }
 
 void
@@ -258,9 +310,29 @@ above_adjust_stix (hashmap<string,double>& t) {
 * Interface
 ******************************************************************************/
 
+static hashmap<string,double> lsub_stix (0.0);
+static hashmap<string,double> lsup_stix (0.0);
 static hashmap<string,double> rsub_stix (0.0);
 static hashmap<string,double> rsup_stix (0.0);
 static hashmap<string,double> above_stix (0.0);
+
+hashmap<string,double>
+lsub_stix_table () {
+  if (N (lsub_stix) == 0) {
+    lsub_adjust_std (lsub_stix);
+    lsub_adjust_stix (lsub_stix);
+  }
+  return lsub_stix;
+}
+
+hashmap<string,double>
+lsup_stix_table () {
+  if (N (lsup_stix) == 0) {
+    lsup_adjust_std (lsup_stix);
+    lsup_adjust_stix (lsup_stix);
+  }
+  return lsup_stix;
+}
 
 hashmap<string,double>
 rsub_stix_table () {

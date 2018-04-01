@@ -16,6 +16,88 @@
 ******************************************************************************/
 
 void
+lsub_adjust_bonum (hashmap<string,double>& t) {
+  adjust_pair (t, "<pi>", 0.03);
+  adjust_pair (t, "<chi>", 0.03);
+  adjust_pair (t, "<Alpha", 0.05);
+  adjust_pair (t, "<Lambda", 0.05);
+  adjust_pair (t, "<Tau>", 0.03);
+  adjust_pair (t, "<cal-A>", 0.05);
+  adjust_pair (t, "<cal-M>", 0.05);
+  adjust_pair (t, "<cal-N>", 0.05);
+  adjust_pair (t, "<cal-S>", 0.03);
+  adjust_pair (t, "<cal-U>", 0.03);
+  adjust_pair (t, "<cal-V>", 0.03);
+  adjust_pair (t, "<cal-W>", 0.03);
+  adjust_pair (t, "<bbb-A>", 0.02);
+  adjust_pair (t, "<bbb-T>", 0.07);
+  adjust_pair (t, "<bbb-U>", 0.03);
+  adjust_pair (t, "<bbb-V>", 0.1);
+  adjust_pair (t, "<bbb-W>", 0.1);
+  adjust_pair (t, "<bbb-X>", 0.03);
+  adjust_pair (t, "<bbb-Y>", 0.1);
+  adjust_pair (t, "<wedge>", 0.02);
+  adjust_pair (t, "<vee>", -0.03);
+  adjust_pair (t, "<curlywedge>", 0.02);
+  adjust_pair (t, "<curlyvee>", -0.03);
+}
+
+void
+lsup_adjust_bonum (hashmap<string,double>& t) {
+  adjust_pair (t, "a", -0.02);
+  adjust_pair (t, "b", 0.02);
+  adjust_pair (t, "c", -0.02);
+  adjust_pair (t, "d", -0.02);
+  adjust_pair (t, "e", -0.03);
+  adjust_pair (t, "g", -0.02);
+  adjust_pair (t, "h", 0.04);
+  adjust_pair (t, "o", -0.02);
+  adjust_pair (t, "q", -0.03);
+  adjust_pair (t, "B", 0.02);
+  adjust_pair (t, "D", 0.02);
+  adjust_pair (t, "E", 0.02);
+  adjust_pair (t, "F", 0.02);
+  adjust_pair (t, "H", 0.02);
+  adjust_pair (t, "I", 0.02);
+  adjust_pair (t, "K", 0.02);
+  adjust_pair (t, "L", 0.02);
+  adjust_pair (t, "M", 0.02);
+  adjust_pair (t, "N", 0.02);
+  adjust_pair (t, "P", 0.02);
+  adjust_pair (t, "R", 0.02);
+  adjust_pair (t, "U", 0.02);
+  adjust_pair (t, "<alpha>", -0.02);
+  adjust_pair (t, "<beta>", -0.02);
+  adjust_pair (t, "<delta>", -0.02);
+  adjust_pair (t, "<iota>", -0.02);
+  adjust_pair (t, "<lambda>", 0.03);
+  adjust_pair (t, "<mu>", 0.03);
+  adjust_pair (t, "<omicron>", -0.02);
+  adjust_pair (t, "<rho>", 0.03);
+  adjust_pair (t, "<sigma>", -0.02);
+  adjust_pair (t, "<chi>", 0.1);
+  adjust_pair (t, "<varpi>", -0.02);
+  adjust_pair (t, "<varrho>", 0.02);
+  adjust_pair (t, "<varsigma>", -0.02);
+  adjust_pair (t, "<phi>", -0.02);
+  adjust_pair (t, "<Alpha>", 0.03);
+  adjust_pair (t, "<Lambda>", 0.03);
+  for (char c= 'a'; c <= 'z'; c++)
+    adjust_pair (t, "<cal-" * string (c) * ">", 0.03);
+  adjust_pair (t, "<cal-f>", 0.1);
+  adjust_pair (t, "<cal-h>", 0.05);
+  adjust_pair (t, "<cal-j>", 0.15);
+  adjust_pair (t, "<cal-m>", 0.03);
+  adjust_pair (t, "<cal-n>", 0.03);
+  adjust_pair (t, "<cal-p>", 0.15);
+  adjust_pair (t, "<cal-A>", 0.15);
+  adjust_pair (t, "<cal-M>", 0.2);
+  adjust_pair (t, "<cal-N>", 0.2);
+  adjust_pair (t, "<cal-S>", 0.15);
+  adjust_pair (t, "<bbb-A>", 0.12);
+}
+
+void
 rsub_adjust_bonum (hashmap<string,double>& t) {
   adjust_pair (t, "!", 0.05);
   adjust_pair (t, "/", -0.05);
@@ -117,6 +199,7 @@ rsub_adjust_bonum (hashmap<string,double>& t) {
   adjust_pair (t, "<bbb-V>", -0.15);
   adjust_pair (t, "<bbb-W>", -0.15);
   adjust_pair (t, "<bbb-Y>", -0.12);
+  adjust_pair (t, "<partial>", -0.05);
 }
 
 void
@@ -200,6 +283,7 @@ rsup_adjust_bonum (hashmap<string,double>& t) {
   for (char c= 'A'; c <= 'Z'; c++)
     adjust_pair (t, "<frak-" * string (c) * ">", 0.02);
   adjust_pair (t, "<frak-U>", -0.03);
+  adjust_pair (t, "<partial>", -0.05);
 }
 
 void
@@ -308,9 +392,29 @@ above_adjust_bonum (hashmap<string,double>& t) {
 * Interface
 ******************************************************************************/
 
+static hashmap<string,double> lsub_bonum (0.0);
+static hashmap<string,double> lsup_bonum (0.0);
 static hashmap<string,double> rsub_bonum (0.0);
 static hashmap<string,double> rsup_bonum (0.0);
 static hashmap<string,double> above_bonum (0.0);
+
+hashmap<string,double>
+lsub_bonum_table () {
+  if (N (lsub_bonum) == 0) {
+    lsub_adjust_std (lsub_bonum);
+    lsub_adjust_bonum (lsub_bonum);
+  }
+  return lsub_bonum;
+}
+
+hashmap<string,double>
+lsup_bonum_table () {
+  if (N (lsup_bonum) == 0) {
+    lsup_adjust_std (lsup_bonum);
+    lsup_adjust_bonum (lsup_bonum);
+  }
+  return lsup_bonum;
+}
 
 hashmap<string,double>
 rsub_bonum_table () {
