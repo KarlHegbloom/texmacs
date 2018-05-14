@@ -25,6 +25,10 @@
 static void special_initialize ();
 font_metric tfm_font_metric (tex_font_metric tfm, font_glyphs pk, double unit);
 
+hashmap<string,double> lsub_ecrm_table ();
+hashmap<string,double> lsup_ecrm_table ();
+hashmap<string,double> rsub_ecrm_table ();
+hashmap<string,double> rsup_ecrm_table ();
 hashmap<string,double> lsub_cmr_table ();
 hashmap<string,double> lsup_cmr_table ();
 hashmap<string,double> rsub_cmr_table ();
@@ -118,6 +122,7 @@ tex_font_rep::tex_font_rep (string name, int status2,
   extra        = conv (tfm->spc_extra ());
   extra->min   = extra->min >> 1;
   extra->max   = extra->min << 1;
+  math_spc     = spc;
   sep          = ((((dpi*PIXEL)/72)*design_size) >> 8) / 10;
   exec         = !ends (family, "tt");
 
@@ -151,7 +156,14 @@ tex_font_rep::tex_font_rep (string name, int status2,
 
   special_initialize ();
 
-  if (family == "cmr" || family == "cmbx") {
+  if (family == "ecrm" || family == "ecbx") {
+    lsub_correct= lsub_ecrm_table ();
+    lsup_correct= lsup_ecrm_table ();
+    rsub_correct= rsub_ecrm_table ();
+    rsup_correct= rsup_ecrm_table ();
+    above_correct= hashmap<string,double> (0.0);
+  }
+  else if (family == "cmr" || family == "cmbx") {
     lsub_correct= lsub_cmr_table ();
     lsup_correct= lsup_cmr_table ();
     rsub_correct= rsub_cmr_table ();
@@ -854,6 +866,9 @@ SI
 tex_font_rep::get_lsub_correction (string s) {
   SI r= -get_left_correction (s);
   if (lsub_correct->contains (s)) r += (SI) (lsub_correct[s] * wfn);
+  else if (N(s) > 1 && is_alpha (s[0]) &&
+           lsub_correct->contains (s (0, 1)))
+    r += (SI) (lsub_correct[s (0, 1)] * wfn);
   return r;
 }
 
@@ -861,6 +876,9 @@ SI
 tex_font_rep::get_lsup_correction (string s) {
   SI r= 0;
   if (lsup_correct->contains (s)) r += (SI) (lsup_correct[s] * wfn);
+  else if (N(s) > 1 && is_alpha (s[0]) &&
+           lsup_correct->contains (s (0, 1)))
+    r += (SI) (lsup_correct[s (0, 1)] * wfn);
   return r;
 }
 
@@ -868,6 +886,9 @@ SI
 tex_font_rep::get_rsub_correction (string s) {
   SI r= 0;
   if (rsub_correct->contains (s)) r += (SI) (rsub_correct[s] * wfn);
+  else if (N(s) > 1 && is_alpha (s[N(s)-1]) &&
+           rsub_correct->contains (s (N(s)-1, N(s))))
+    r += (SI) (rsub_correct[s (N(s)-1, N(s))] * wfn);
   return r;
 }
 
@@ -875,6 +896,9 @@ SI
 tex_font_rep::get_rsup_correction (string s) {
   SI r= get_right_correction (s);
   if (rsup_correct->contains (s)) r += (SI) (rsup_correct[s] * wfn);
+  else if (N(s) > 1 && is_alpha (s[N(s)-1]) &&
+           rsup_correct->contains (s (N(s)-1, N(s))))
+    r += (SI) (rsup_correct[s (N(s)-1, N(s))] * wfn);
   return r;
 }
 

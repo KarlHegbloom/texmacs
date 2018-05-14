@@ -17,8 +17,9 @@
 
 void
 lsub_adjust_termes (hashmap<string,double>& t) {
-  adjust_pair (t, "p", 0.03);
-  adjust_pair (t, "U", 0.03);
+  adjust_pair (t, "T", 0.02);
+  adjust_pair (t, "V", 0.02);
+  adjust_pair (t, "Y", 0.02);
   adjust_pair (t, "<tau>", 0.03);
   adjust_pair (t, "<chi>", 0.1);
   adjust_pair (t, "<Upsilon>", 0.03);
@@ -30,30 +31,15 @@ lsub_adjust_termes (hashmap<string,double>& t) {
   adjust_pair (t, "<bbb-W>", 0.08);
   adjust_pair (t, "<bbb-Y>", 0.08);
   adjust_pair (t, "<bbb-X>", 0.03);
+  adjust_pair (t, "<bbb-u>", 0.02);
+  adjust_pair (t, "<bbb-v>", 0.05);
+  adjust_pair (t, "<bbb-w>", 0.03);
   adjust_pair (t, "<vee>", -0.05);
   adjust_pair (t, "<curlyvee>", -0.07);
 }
 
 void
 lsup_adjust_termes (hashmap<string,double>& t) {
-  adjust_pair (t, "b", 0.02);
-  adjust_pair (t, "B", 0.02);
-  adjust_pair (t, "D", 0.02);
-  adjust_pair (t, "E", 0.02);
-  adjust_pair (t, "F", 0.02);
-  adjust_pair (t, "H", 0.02);
-  adjust_pair (t, "I", 0.02);
-  adjust_pair (t, "J", 0.02);
-  adjust_pair (t, "K", 0.02);
-  adjust_pair (t, "L", 0.02);
-  adjust_pair (t, "M", 0.02);
-  adjust_pair (t, "N", 0.02);
-  adjust_pair (t, "P", 0.02);
-  adjust_pair (t, "R", 0.02);
-  adjust_pair (t, "S", 0.02);
-  adjust_pair (t, "U", 0.02);
-  adjust_pair (t, "V", 0.02);
-  adjust_pair (t, "W", 0.02);
   adjust_pair (t, "<beta>", 0.05);
   adjust_pair (t, "<rho>", 0.02);
   adjust_pair (t, "<chi>", 0.1);
@@ -66,37 +52,41 @@ lsup_adjust_termes (hashmap<string,double>& t) {
   adjust_pair (t, "<cal-N>", 0.08);
   adjust_pair (t, "<cal-S>", 0.05);
   adjust_pair (t, "<bbb-A>", 0.05);
+  adjust_pair (t, "<bbb-j>", 0.03);
 }
 
 void
 rsub_adjust_termes (hashmap<string,double>& t) {
+  adjust_pair (t, "A", 0.05);
+  adjust_pair (t, "I", 0.05);
+  adjust_pair (t, "K", 0.05);
+  adjust_pair (t, "M", 0.05);
+  adjust_pair (t, "P", -0.03);
+  adjust_pair (t, "Q", 0.05);
+  adjust_pair (t, "R", 0.05);
+  adjust_pair (t, "T", -0.05);
+  adjust_pair (t, "V", -0.05);
+  adjust_pair (t, "W", -0.05);
+  adjust_pair (t, "Y", -0.05);
+  adjust_pair (t, "a", 0.03);
+  adjust_pair (t, "d", 0.03);
+  adjust_pair (t, "g", 0.05);
+  adjust_pair (t, "h", 0.03);
+  adjust_pair (t, "i", 0.03);
+  adjust_pair (t, "k", 0.03);
+  adjust_pair (t, "l", 0.03);
+  adjust_pair (t, "m", 0.03);
+  adjust_pair (t, "n", 0.03);
+  adjust_pair (t, "q", 0.05);
+  adjust_pair (t, "t", 0.03);
+  adjust_pair (t, "u", 0.03);
+  adjust_pair (t, "v", -0.05);
+  adjust_pair (t, "w", -0.05);
+  adjust_pair (t, "x", 0.03);
+  adjust_pair (t, "y", -0.05);
+  adjust_pair (t, "z", 0.03);
   adjust_pair (t, "!", 0.05);
   adjust_pair (t, "/", -0.02);
-  adjust_pair (t, "A", 0.03);
-  adjust_pair (t, "B", 0.01);
-  adjust_pair (t, "D", 0.02);
-  adjust_pair (t, "F", -0.05);
-  adjust_pair (t, "G", 0.03);
-  adjust_pair (t, "I", 0.03);
-  adjust_pair (t, "J", 0.02);
-  adjust_pair (t, "L", 0.01);
-  adjust_pair (t, "N", -0.02);
-  adjust_pair (t, "O", 0.01);
-  adjust_pair (t, "P", -0.02);
-  adjust_pair (t, "Q", 0.02);
-  adjust_pair (t, "R", 0.02);
-  adjust_pair (t, "S", 0.03);
-  adjust_pair (t, "T", -0.02);
-  adjust_pair (t, "U", -0.02);
-  adjust_pair (t, "Z", 0.05);
-  for (char c= 'a'; c <= 'z'; c++)
-    adjust_pair (t, string (c), 0.02);
-  adjust_pair (t, "h", 0.02);
-  adjust_pair (t, "l", 0.02);
-  adjust_pair (t, "m", 0.02);
-  adjust_pair (t, "n", 0.01);
-  adjust_pair (t, "x", 0.02);
-  adjust_pair (t, "z", 0.02);
   adjust_pair (t, "<Alpha>", 0.02);
   adjust_pair (t, "<Delta>", 0.01);
   adjust_pair (t, "<Gamma>", -0.02);
@@ -198,37 +188,25 @@ rsub_adjust_termes (hashmap<string,double>& t) {
   adjust_pair (t, "<bbb-W>", -0.12);
   adjust_pair (t, "<bbb-Y>", -0.15);
   adjust_pair (t, "<bbb-Z>", 0.03);
+  adjust_pair (t, "<bbb-f>", -0.03);
+  adjust_pair (t, "<bbb-j>", 0.02);
+  adjust_pair (t, "<bbb-v>", -0.05);
+  adjust_pair (t, "<bbb-w>", -0.05);
+  adjust_pair (t, "<bbb-y>", -0.05);
   adjust_pair (t, "<partial>", -0.03);
 }
   
 void
 rsup_adjust_termes (hashmap<string,double>& t) {
+  adjust_pair (t, "A", -0.05);
+  adjust_pair (t, "L", -0.05);
+  adjust_pair (t, "g", 0.02);
+  adjust_pair (t, "r", 0.02);
+  adjust_pair (t, "t", 0.02);
   adjust_pair (t, "!", 0.05);
   adjust_pair (t, "?", 0.05);
   adjust_pair (t, "/", 0.05);
   adjust_pair (t, "0", 0.03);
-  adjust_pair (t, "B", 0.03);
-  adjust_pair (t, "D", 0.02);
-  adjust_pair (t, "G", 0.02);
-  adjust_pair (t, "H", -0.02);
-  adjust_pair (t, "I", -0.02);
-  adjust_pair (t, "P", 0.03);
-  adjust_pair (t, "Q", 0.01);
-  adjust_pair (t, "R", 0.03);
-  adjust_pair (t, "W", 0.02);
-  adjust_pair (t, "Z", 0.02);
-  adjust_pair (t, "a", 0.01);
-  adjust_pair (t, "b", 0.02);
-  adjust_pair (t, "c", 0.02);
-  adjust_pair (t, "d", 0.01);
-  adjust_pair (t, "e", 0.02);
-  adjust_pair (t, "i", 0.02);
-  adjust_pair (t, "l", 0.02);
-  adjust_pair (t, "q", 0.01);
-  adjust_pair (t, "r", 0.02);
-  adjust_pair (t, "s", 0.02);
-  adjust_pair (t, "t", 0.02);
-  adjust_pair (t, "x", 0.02);
   adjust_pair (t, "<Alpha>", -0.05);
   adjust_pair (t, "<Gamma>", 0.02);
   adjust_pair (t, "<Delta>", -0.02);
@@ -289,6 +267,16 @@ rsup_adjust_termes (hashmap<string,double>& t) {
   adjust_pair (t, "<bbb-M>", 0.01);
   adjust_pair (t, "<bbb-P>", 0.02);
   adjust_pair (t, "<bbb-R>", -0.03);
+  adjust_pair (t, "<bbb-a>", -0.03);
+  adjust_pair (t, "<bbb-d>", -0.03);
+  adjust_pair (t, "<bbb-h>", -0.03);
+  adjust_pair (t, "<bbb-i>", -0.02);
+  adjust_pair (t, "<bbb-j>", 0.02);
+  adjust_pair (t, "<bbb-k>", -0.03);
+  adjust_pair (t, "<bbb-l>", -0.03);
+  adjust_pair (t, "<bbb-m>", -0.03);
+  adjust_pair (t, "<bbb-n>", -0.03);
+  adjust_pair (t, "<bbb-q>", -0.03);
   adjust_pair (t, "<frak-Q>", -0.02);
   adjust_pair (t, "<frak-U>", -0.03);
   adjust_pair (t, "<frak-a>", -0.03);
@@ -443,4 +431,169 @@ above_termes_table () {
   if (N (above_termes) == 0)
     above_adjust_termes (above_termes);
   return above_termes;
+}
+
+/******************************************************************************
+* Table initialization
+******************************************************************************/
+
+void
+lsub_adjust_termes_italic (hashmap<string,double>& t) {
+  adjust_pair (t, "p", 0.03);
+  adjust_pair (t, "U", 0.03);
+}
+
+void
+lsup_adjust_termes_italic (hashmap<string,double>& t) {
+  adjust_pair (t, "b", 0.02);
+  adjust_pair (t, "B", 0.02);
+  adjust_pair (t, "D", 0.02);
+  adjust_pair (t, "E", 0.02);
+  adjust_pair (t, "F", 0.02);
+  adjust_pair (t, "H", 0.02);
+  adjust_pair (t, "I", 0.02);
+  adjust_pair (t, "J", 0.02);
+  adjust_pair (t, "K", 0.02);
+  adjust_pair (t, "L", 0.02);
+  adjust_pair (t, "M", 0.02);
+  adjust_pair (t, "N", 0.02);
+  adjust_pair (t, "P", 0.02);
+  adjust_pair (t, "R", 0.02);
+  adjust_pair (t, "S", 0.02);
+  adjust_pair (t, "U", 0.02);
+  adjust_pair (t, "V", 0.02);
+  adjust_pair (t, "W", 0.02);
+}
+
+void
+rsub_adjust_termes_italic (hashmap<string,double>& t) {
+  adjust_pair (t, "A", 0.03);
+  adjust_pair (t, "B", 0.01);
+  adjust_pair (t, "D", 0.02);
+  adjust_pair (t, "F", -0.05);
+  adjust_pair (t, "G", 0.03);
+  adjust_pair (t, "I", 0.03);
+  adjust_pair (t, "J", 0.02);
+  adjust_pair (t, "L", 0.01);
+  adjust_pair (t, "N", -0.02);
+  adjust_pair (t, "O", 0.01);
+  adjust_pair (t, "P", -0.02);
+  adjust_pair (t, "Q", 0.02);
+  adjust_pair (t, "R", 0.02);
+  adjust_pair (t, "S", 0.03);
+  adjust_pair (t, "T", -0.02);
+  adjust_pair (t, "U", -0.02);
+  adjust_pair (t, "Z", 0.05);
+  for (char c= 'a'; c <= 'z'; c++)
+    adjust_pair (t, string (c), 0.02);
+  adjust_pair (t, "h", 0.02);
+  adjust_pair (t, "l", 0.02);
+  adjust_pair (t, "m", 0.02);
+  adjust_pair (t, "n", 0.01);
+  adjust_pair (t, "x", 0.02);
+  adjust_pair (t, "z", 0.02);
+}
+  
+void
+rsup_adjust_termes_italic (hashmap<string,double>& t) {
+  adjust_pair (t, "B", 0.03);
+  adjust_pair (t, "D", 0.02);
+  adjust_pair (t, "G", 0.02);
+  adjust_pair (t, "H", -0.02);
+  adjust_pair (t, "I", -0.02);
+  adjust_pair (t, "P", 0.03);
+  adjust_pair (t, "Q", 0.01);
+  adjust_pair (t, "R", 0.03);
+  adjust_pair (t, "W", 0.02);
+  adjust_pair (t, "Z", 0.02);
+  adjust_pair (t, "a", 0.01);
+  adjust_pair (t, "b", 0.02);
+  adjust_pair (t, "c", 0.02);
+  adjust_pair (t, "d", 0.01);
+  adjust_pair (t, "e", 0.02);
+  adjust_pair (t, "i", 0.02);
+  adjust_pair (t, "l", 0.02);
+  adjust_pair (t, "q", 0.01);
+  adjust_pair (t, "r", 0.02);
+  adjust_pair (t, "s", 0.02);
+  adjust_pair (t, "t", 0.02);
+  adjust_pair (t, "x", 0.02);
+}
+
+void
+above_adjust_termes_italic (hashmap<string,double>& t) {
+  adjust_pair (t, "b", -0.02);
+  adjust_pair (t, "d", 0.06);
+  adjust_pair (t, "f", -0.04);
+  adjust_pair (t, "h", -0.02);
+  adjust_pair (t, "k", -0.02);
+  adjust_pair (t, "m", -0.02);
+  adjust_pair (t, "n", -0.02);
+  adjust_pair (t, "r", -0.04);
+  adjust_pair (t, "s", -0.04);
+  adjust_pair (t, "x", -0.04);
+  adjust_pair (t, "z", -0.04);
+  adjust_pair (t, "A", 0.04);
+  adjust_pair (t, "I", -0.02);
+  adjust_pair (t, "J", 0.06);
+  adjust_pair (t, "M", -0.04);
+  adjust_pair (t, "N", -0.04);
+  adjust_pair (t, "T", -0.04);
+  adjust_pair (t, "U", -0.02);
+  adjust_pair (t, "V", -0.08);
+  adjust_pair (t, "W", -0.06);
+  adjust_pair (t, "Y", -0.08);
+}
+
+/******************************************************************************
+* Interface
+******************************************************************************/
+
+static hashmap<string,double> lsub_termes_italic (0.0);
+static hashmap<string,double> lsup_termes_italic (0.0);
+static hashmap<string,double> rsub_termes_italic (0.0);
+static hashmap<string,double> rsup_termes_italic (0.0);
+static hashmap<string,double> above_termes_italic (0.0);
+
+hashmap<string,double>
+lsub_termes_italic_table () {
+  if (N (lsub_termes_italic) == 0) {
+    lsub_adjust_std (lsub_termes_italic);
+    lsub_adjust_termes_italic (lsub_termes_italic);
+  }
+  return lsub_termes_italic;
+}
+
+hashmap<string,double>
+lsup_termes_italic_table () {
+  if (N (lsup_termes_italic) == 0) {
+    lsup_adjust_std (lsup_termes_italic);
+    lsup_adjust_termes_italic (lsup_termes_italic);
+  }
+  return lsup_termes_italic;
+}
+
+hashmap<string,double>
+rsub_termes_italic_table () {
+  if (N (rsub_termes_italic) == 0) {
+    rsub_adjust_std (rsub_termes_italic);
+    rsub_adjust_termes_italic (rsub_termes_italic);
+  }
+  return rsub_termes_italic;
+}
+
+hashmap<string,double>
+rsup_termes_italic_table () {
+  if (N (rsup_termes_italic) == 0) {
+    rsup_adjust_std (rsup_termes_italic);
+    rsup_adjust_termes_italic (rsup_termes_italic);
+  }
+  return rsup_termes_italic;
+}
+
+hashmap<string,double>
+above_termes_italic_table () {
+  if (N (above_termes_italic) == 0)
+    above_adjust_termes_italic (above_termes_italic);
+  return above_termes_italic;
 }
